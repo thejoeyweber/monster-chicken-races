@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Race Track - Monster Chicken Races</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="src/css/race.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Monster Chicken Races</h1>
+            <p>Race your chickens to glory!</p>
+            <nav>
+                <a href="index.html" class="nav-button">Home</a>
+                <a href="coop.html" class="nav-button">My Coop</a>
+                <a href="race.html" class="nav-button active">Race</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="race-setup">
+                <h2>Race Setup</h2>
+                <div class="race-controls">
+                    <div class="race-options">
+                        <div class="form-group">
+                            <label for="race-type">Race Type</label>
+                            <select id="race-type">
+                                <option value="standard">Standard Race</option>
+                                <option value="chaos">Chaos Race</option>
+                                <option value="endurance">Endurance Race</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="track-length">Track Length</label>
+                            <select id="track-length">
+                                <option value="short">Short (5 segments)</option>
+                                <option value="medium" selected>Medium (10 segments)</option>
+                                <option value="long">Long (15 segments)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="start-race" disabled>Start Race</button>
+                </div>
+                
+                <div id="race-participants">
+                    <h3>Select Race Participants</h3>
+                    <p class="help-text">Select 2-4 chickens to race</p>
+                    <div id="available-chickens" class="chicken-selection-grid">
+                        <!-- Available chickens will be loaded here -->
+                        <div id="no-chickens-message" class="hidden">
+                            <p>No chickens available for racing!</p>
+                            <a href="index.html" class="nav-button">Generate Chickens</a>
+                        </div>
+                    </div>
+                    
+                    <h3>Selected Racers</h3>
+                    <div id="selected-racers" class="selected-racers-container">
+                        <p id="no-racers-message">No chickens selected yet</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="race-track" class="hidden">
+                <h2>Race In Progress</h2>
+                <div class="race-content">
+                    <div class="track-container">
+                        <div class="race-track">
+                            <div class="lane-labels">
+                                <!-- Lane labels will be added here -->
+                            </div>
+                            <div class="track-lanes">
+                                <!-- Race lanes will be added here -->
+                            </div>
+                            <div class="finish-line"></div>
+                        </div>
+                        <div class="race-controls">
+                            <button id="reset-race">Back to Setup</button>
+                        </div>
+                    </div>
+                    
+                    <div id="race-events" class="race-events">
+                        <h3>Race Events</h3>
+                        <div id="events-log" class="events-log"></div>
+                    </div>
+                    
+                    <div id="race-results" class="race-results hidden">
+                        <h3>Race Results</h3>
+                        <ol id="results-list" class="results-list">
+                            <!-- Results will be added here -->
+                        </ol>
+                        <button id="save-results">Save Results</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Monster Chicken Races - A hilariously chaotic game</p>
+        </footer>
+    </div>
+
+    <script src="src/js/chicken-generator.js"></script>
+    <script src="src/js/race-simulator.js"></script>
+    <script src="src/js/race.js"></script>
+</body>
+</html> 

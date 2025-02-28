@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Coop - Monster Chicken Races</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="src/css/coop.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Monster Chicken Races</h1>
+            <p>Manage your monster chickens!</p>
+            <nav>
+                <a href="index.html" class="nav-button">Home</a>
+                <a href="coop.html" class="nav-button active">My Coop</a>
+                <a href="race.html" class="nav-button">Race</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="coop-container">
+                <h2>Your Chicken Coop</h2>
+                <div id="coop-stats">
+                    <p>Total Chickens: <span id="total-chickens">0</span></p>
+                    <p>Race Winners: <span id="winner-chickens">0</span></p>
+                </div>
+                
+                <div id="chicken-actions">
+                    <button id="race-button" disabled>Start Race</button>
+                    <select id="sort-chickens">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="fastest">Fastest First</option>
+                        <option value="strongest">Strongest First</option>
+                        <option value="wisest">Wisest First</option>
+                        <option value="reckless">Most Reckless First</option>
+                        <option value="stamina">Most Stamina First</option>
+                        <option value="wins">Most Wins</option>
+                    </select>
+                </div>
+                
+                <div id="chicken-grid">
+                    <!-- Chickens will be loaded here -->
+                    <div id="empty-coop-message">
+                        <p>Your coop is empty! Go generate some chickens.</p>
+                        <a href="index.html" class="nav-button">Generate Chickens</a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Chicken detail modal -->
+            <div id="chicken-modal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="chicken-detail">
+                        <h2 id="modal-chicken-name"></h2>
+                        <div class="chicken-image-container">
+                            <img id="modal-chicken-image" src="" alt="Chicken">
+                            <div id="modal-chicken-sprite"></div>
+                        </div>
+                        <div class="chicken-stats">
+                            <div class="stat-row">
+                                <div class="stat">
+                                    <span class="stat-label">Speed</span>
+                                    <div class="stat-bar">
+                                        <div id="modal-speed-bar" class="stat-fill"></div>
+                                    </div>
+                                    <span id="modal-speed-value" class="stat-value"></span>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat">
+                                    <span class="stat-label">Strength</span>
+                                    <div class="stat-bar">
+                                        <div id="modal-strength-bar" class="stat-fill"></div>
+                                    </div>
+                                    <span id="modal-strength-value" class="stat-value"></span>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat">
+                                    <span class="stat-label">Wisdom</span>
+                                    <div class="stat-bar">
+                                        <div id="modal-wisdom-bar" class="stat-fill"></div>
+                                    </div>
+                                    <span id="modal-wisdom-value" class="stat-value"></span>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat">
+                                    <span class="stat-label">Recklessness</span>
+                                    <div class="stat-bar">
+                                        <div id="modal-recklessness-bar" class="stat-fill"></div>
+                                    </div>
+                                    <span id="modal-recklessness-value" class="stat-value"></span>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat">
+                                    <span class="stat-label">Stamina</span>
+                                    <div class="stat-bar">
+                                        <div id="modal-stamina-bar" class="stat-fill"></div>
+                                    </div>
+                                    <span id="modal-stamina-value" class="stat-value"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chicken-races">
+                            <p>Races: <span id="modal-race-count">0</span></p>
+                            <p>Wins: <span id="modal-win-count">0</span></p>
+                        </div>
+                        <div class="chicken-actions">
+                            <button id="modal-race-button">Enter Race</button>
+                            <button id="modal-sell-button">Sell Chicken</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Monster Chicken Races - A hilariously chaotic game</p>
+        </footer>
+    </div>
+
+    <script src="src/js/chicken-generator.js"></script>
+    <script src="src/js/coop.js"></script>
+</body>
+</html> 

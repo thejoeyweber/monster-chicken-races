@@ -1,0 +1,6 @@
+- we should use simple/vanilla technology where ever possible
+- we should aim to keep the codebase lean
+- we are "vibe coding" so I welcome your questions, ideas, and expansion on what we're building
+- if you're ever unclear on anything or if you run into repeated errors, always stop, summarize the issue, and let us work through it together first before you continue working
+- we're on windows and using PowerShell. whenever you use the terminal, default to PowerShell
+- we use Python's built-in HTTP server (port 8000) for development: `python -m http.server`

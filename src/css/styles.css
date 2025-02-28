@@ -1,0 +1,230 @@
+/* Import a retro game font */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+
+/* Global styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+h1, h2, h3, h4, button, .nav-button {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header styles */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #1d3557;
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+}
+
+header p {
+    color: #457b9d;
+    font-size: 1.1rem;
+}
+
+/* Main content */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section {
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+/* Chicken generator section */
+#chicken-generator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.upload-container {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.upload-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #457b9d;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #1d3557;
+}
+
+#generate-button {
+    padding: 12px 30px;
+    background-color: #e63946;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#generate-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#generate-button:hover:not(:disabled) {
+    transform: scale(1.05);
+    background-color: #d1313e;
+}
+
+/* Chicken display section */
+#chicken-display {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.chicken-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.chicken-card h2 {
+    color: #1d3557;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.chicken-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+    background-color: #f1faee;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#chicken-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.4;
+}
+
+#chicken-sprite {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+}
+
+/* Chicken stats */
+.chicken-stats {
+    padding: 10px;
+}
+
+.stat-row {
+    margin-bottom: 15px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-label {
+    flex: 0 0 100px;
+    text-align: right;
+    font-weight: bold;
+    color: #457b9d;
+}
+
+.stat-bar {
+    flex: 1;
+    height: 15px;
+    background-color: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+    background-color: #a8dadc;
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+.stat-value {
+    flex: 0 0 30px;
+    font-weight: bold;
+}
+
+#save-chicken {
+    padding: 12px 30px;
+    background-color: #2a9d8f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#save-chicken:hover {
+    transform: scale(1.05);
+    background-color: #238479;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #777;
+    font-size: 0.9rem;
+} 

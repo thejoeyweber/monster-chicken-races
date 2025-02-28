@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Chicken Races</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <style>
+        /* Add navigation style to match coop.css styling */
+        nav {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .nav-button {
+            padding: 8px 16px;
+            background-color: #457b9d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .nav-button:hover {
+            background-color: #1d3557;
+            transform: translateY(-2px);
+        }
+        
+        .nav-button.active {
+            background-color: #1d3557;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Monster Chicken Races</h1>
+            <p>Upload an image to generate your monster chicken!</p>
+            <nav>
+                <a href="index.html" class="nav-button active">Home</a>
+                <a href="coop.html" class="nav-button">My Coop</a>
+                <a href="race.html" class="nav-button">Race</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="chicken-generator">
+                <div class="upload-container">
+                    <label for="image-upload" class="upload-button">Choose Image</label>
+                    <input type="file" id="image-upload" accept="image/*" hidden>
+                </div>
+                <button id="generate-button" disabled>Generate Chicken</button>
+            </section>
+
+            <section id="chicken-display" class="hidden">
+                <div class="chicken-card">
+                    <h2 id="chicken-name"></h2>
+                    <div class="chicken-image-container">
+                        <img id="chicken-image" src="" alt="Your monster chicken">
+                        <div id="chicken-sprite"></div>
+                    </div>
+                    <div class="chicken-stats">
+                        <div class="stat-row">
+                            <div class="stat">
+                                <span class="stat-label">Speed</span>
+                                <div class="stat-bar">
+                                    <div id="speed-bar" class="stat-fill"></div>
+                                </div>
+                                <span id="speed-value" class="stat-value"></span>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat">
+                                <span class="stat-label">Strength</span>
+                                <div class="stat-bar">
+                                    <div id="strength-bar" class="stat-fill"></div>
+                                </div>
+                                <span id="strength-value" class="stat-value"></span>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat">
+                                <span class="stat-label">Wisdom</span>
+                                <div class="stat-bar">
+                                    <div id="wisdom-bar" class="stat-fill"></div>
+                                </div>
+                                <span id="wisdom-value" class="stat-value"></span>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat">
+                                <span class="stat-label">Recklessness</span>
+                                <div class="stat-bar">
+                                    <div id="recklessness-bar" class="stat-fill"></div>
+                                </div>
+                                <span id="recklessness-value" class="stat-value"></span>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat">
+                                <span class="stat-label">Stamina</span>
+                                <div class="stat-bar">
+                                    <div id="stamina-bar" class="stat-fill"></div>
+                                </div>
+                                <span id="stamina-value" class="stat-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="save-chicken">Save to Coop</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>Monster Chicken Races - A hilariously chaotic game</p>
+        </footer>
+    </div>
+
+    <script src="src/js/chicken-generator.js"></script>
+    <script src="src/js/app.js"></script>
+</body>
+</html> 
