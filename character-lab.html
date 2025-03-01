@@ -282,6 +282,7 @@
             padding: 10px;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .trait-card:hover {
@@ -472,6 +473,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            position: relative;
         }
 
         .variant-box:hover {
@@ -518,9 +520,251 @@
             background: var(--primary-color);
             color: white;
         }
+
+        /* SVG Editor Modal Styles */
+        .svg-editor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+        }
+
+        .svg-editor-content {
+            background: #1e1e1e;
+            color: #fff;
+            border-radius: 8px;
+            width: 95%;
+            height: 95%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .svg-editor-header {
+            padding: 15px;
+            background: #2d2d2d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .svg-editor-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .svg-editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .svg-editor-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .svg-editor-btn.primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .svg-editor-btn.secondary {
+            background: #4d4d4d;
+            color: white;
+        }
+        
+        .svg-editor-main {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* SVG Editor Selection Styles */
+        #editor-content path.selected,
+        #editor-content circle.selected,
+        #editor-content rect.selected {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        #editor-content .path-point {
+            cursor: move;
+            opacity: 0.5;
+            transition: opacity 0.2s, r 0.2s;
+        }
+
+        #editor-content .path-point:hover,
+        #editor-content .path-point.active {
+            opacity: 1;
+            r: 4;
+        }
+
+        #editor-content path,
+        #editor-content circle,
+        #editor-content rect {
+            cursor: move;
+        }
+
+        .svg-editor-properties {
+            background: #2d2d2d;
+            padding: 15px;
+            border-left: 1px solid #3d3d3d;
+            overflow-y: auto;
+        }
+
+        .tool-group {
+            margin-bottom: 20px;
+        }
+
+        .tool-group-title {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .tool-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 8px;
+            background: #3d3d3d;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: #4d4d4d;
+        }
+
+        .tool-btn.active {
+            background: var(--accent-color);
+        }
+
+        .property-group {
+            margin-bottom: 20px;
+        }
+
+        .property-label {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 8px;
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 4px;
+            color: white;
+            font-family: monospace;
+        }
+
+        .property-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 1px;
+            background: #3d3d3d;
+            padding: 2px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .view-toggle-btn {
+            flex: 1;
+            padding: 8px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .view-toggle-btn.active {
+            background: var(--accent-color);
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 200px;
+            background: #1e1e1e;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            color: white;
+            font-family: monospace;
+            padding: 10px;
+            resize: vertical;
+        }
+
+        .code-editor:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .edit-trait-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            border-radius: 4px;
+            padding: 4px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1;
+        }
+
+        .variant-box:hover .edit-trait-btn,
+        .trait-card:hover .edit-trait-btn {
+            opacity: 1;
+        }
+
+        .edit-trait-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
+    <!-- Add SVG Editor Modal Template -->
+    <template id="svg-editor-template">
+        <div class="svg-editor-modal">
+            <div class="svg-editor-content">
+                <div class="svg-editor-header">
+                    <div class="svg-editor-title">Edit Trait: <span class="trait-name"></span></div>
+                    <div class="svg-editor-actions">
+                        <button class="svg-editor-btn secondary" data-action="cancel">Cancel</button>
+                        <button class="svg-editor-btn primary" data-action="save">Save Changes</button>
+                    </div>
+                </div>
+                <div class="svg-editor-main">
+                    <!-- SVG-edit iframe will be loaded here dynamically -->
+                    <iframe id="svg-editor-frame" src="about:blank" style="width:100%; height:100%; border:none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <div class="container">
         <div class="controls">
             <div class="control-group">
@@ -576,6 +820,7 @@
         </div>
     </div>
 
+    <script src="src/js/animation-data.js"></script>
     <script src="src/js/character-lab.js"></script>
     <script>
         // Accordion functionality

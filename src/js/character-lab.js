@@ -11,6 +11,119 @@ class ChickenLab {
         this.isAnimating = false;
         this.currentAnimation = null;
         
+        // Define trait variations
+        this.eyeVariants = {
+            normal: {
+                front: `
+                    <!-- Left eye -->
+                    <circle cx="-8" cy="-2" r="6" fill="white"/>
+                    <circle cx="-8" cy="-2" r="4" fill="black"/>
+                    <circle cx="-9" cy="-3" r="1.5" fill="white"/>
+                    
+                    <!-- Right eye -->
+                    <circle cx="8" cy="-2" r="6" fill="white"/>
+                    <circle cx="8" cy="-2" r="4" fill="black"/>
+                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
+                `,
+                side: `
+                    <circle cx="8" cy="-2" r="6" fill="white"/>
+                    <circle cx="8" cy="-2" r="4" fill="black"/>
+                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
+                `
+            }
+        };
+
+        this.beakVariants = {
+            normal: {
+                front: `
+                    <!-- Upper beak -->
+                    <path d="
+                        M0,0
+                        l-5,6
+                        l10,0
+                        z"
+                        fill="#FFB74D"
+                    />
+                    <!-- Lower beak -->
+                    <path d="
+                        M-3,4
+                        l3,2
+                        l3,-2
+                        l-3,3
+                        z"
+                        fill="#FFA000"
+                    />
+                `,
+                side: `
+                    <!-- Upper beak -->
+                    <path d="
+                        M10,0
+                        l15,-2
+                        l-2,4
+                        z"
+                        fill="#FFB74D"
+                    />
+                    <!-- Lower beak -->
+                    <path d="
+                        M10,0
+                        l12,1
+                        l-9,3
+                        z"
+                        fill="#FFA000"
+                    />
+                `
+            }
+        };
+
+        this.topVariants = {
+            normal: {
+                front: `
+                    <!-- Main comb -->
+                    <path d="
+                        M0,-25
+                        C-3,-30 -6,-28 -9,-25
+                        C-6,-27 -3,-27 0,-25
+                        C3,-27 6,-27 9,-25
+                        C6,-28 3,-30 0,-25
+                        Z"
+                        fill="#FF5252"
+                    />
+                    <!-- Additional spikes -->
+                    <path d="
+                        M-6,-26
+                        C-4,-29 -2,-28 0,-26
+                        C2,-28 4,-29 6,-26
+                        Z"
+                        fill="#FF5252"
+                    />
+                `,
+                side: `
+                    <!-- Multiple poof sections -->
+                    <path d="
+                        M0,-25
+                        C3,-28 6,-26 9,-23
+                        C6,-25 3,-25 0,-23
+                        Z"
+                        fill="#FF5252"
+                    />
+                    <path d="
+                        M4,-24
+                        C7,-27 10,-25 13,-22
+                        C10,-24 7,-24 4,-22
+                        Z"
+                        fill="#FF5252"
+                    />
+                    <path d="
+                        M8,-23
+                        C11,-26 14,-24 17,-21
+                        C14,-23 11,-23 8,-21
+                        Z"
+                        fill="#FF5252"
+                    />
+                `
+            }
+        };
+
         // Define all possible trait types and variants
         this.traitDefinitions = {
             // Head traits
@@ -464,819 +577,6 @@ class ChickenLab {
     defineBaseComponents() {
         console.log('Defining base components with traits:', this.currentTraits);
         
-        // Define trait variations
-        const eyeVariants = {
-            normal: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-8" cy="-2" r="4" fill="black"/>
-                    <circle cx="-9" cy="-3" r="1.5" fill="white"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="4" fill="black"/>
-                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="4" fill="black"/>
-                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
-                `
-            },
-            angry: {
-                front: `
-                    <!-- Left eye -->
-                    <path d="M-14,-6 L-2,2" stroke="black" stroke-width="2"/>
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-8" cy="-2" r="3.5" fill="black"/>
-                    
-                    <!-- Right eye -->
-                    <path d="M2,2 L14,-6" stroke="black" stroke-width="2"/>
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="3.5" fill="black"/>
-                `,
-                side: `
-                    <path d="M2,2 L14,-6" stroke="black" stroke-width="2"/>
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="3.5" fill="black"/>
-                `
-            },
-            cute: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-8" cy="-2" r="4" fill="black"/>
-                    <circle cx="-8" cy="-4" r="2" fill="white"/>
-                    <path d="M-12,-6 Q-8,-8 -4,-6" fill="none" stroke="black" stroke-width="1.5"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="4" fill="black"/>
-                    <circle cx="8" cy="-4" r="2" fill="white"/>
-                    <path d="M4,-6 Q8,-8 12,-6" fill="none" stroke="black" stroke-width="1.5"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="4" fill="black"/>
-                    <circle cx="8" cy="-4" r="2" fill="white"/>
-                    <path d="M4,-6 Q8,-8 12,-6" fill="none" stroke="black" stroke-width="1.5"/>
-                `
-            },
-            derp: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-6" cy="-4" r="3" fill="black"/>
-                    <circle cx="-5" cy="-5" r="1" fill="white"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="10" cy="0" r="3" fill="black"/>
-                    <circle cx="11" cy="-1" r="1" fill="white"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="10" cy="0" r="3" fill="black"/>
-                    <circle cx="11" cy="-1" r="1" fill="white"/>
-                `
-            },
-            sleepy: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <path d="M-12,-4 Q-8,-6 -4,-4" fill="none" stroke="black" stroke-width="1.5"/>
-                    <path d="M-11,-2 Q-8,0 -5,-2" fill="black"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="M4,-4 Q8,-6 12,-4" fill="none" stroke="black" stroke-width="1.5"/>
-                    <path d="M5,-2 Q8,0 11,-2" fill="black"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="M4,-4 Q8,-6 12,-4" fill="none" stroke="black" stroke-width="1.5"/>
-                    <path d="M5,-2 Q8,0 11,-2" fill="black"/>
-                `
-            },
-            suspicious: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <path d="M-11,-5 L-5,1" fill="none" stroke="black" stroke-width="1.5"/>
-                    <circle cx="-8" cy="-2" r="3" fill="black"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="M5,1 L11,-5" fill="none" stroke="black" stroke-width="1.5"/>
-                    <circle cx="8" cy="-2" r="3" fill="black"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="M5,1 L11,-5" fill="none" stroke="black" stroke-width="1.5"/>
-                    <circle cx="8" cy="-2" r="3" fill="black"/>
-                `
-            },
-            robot: {
-                front: `
-                    <!-- Left eye -->
-                    <rect x="-12" y="-6" width="8" height="8" fill="#333" rx="1"/>
-                    <rect x="-11" y="-5" width="6" height="6" fill="#0ff"/>
-                    <path d="M-11,-5 L-5,1" stroke="#0ff" stroke-width="0.5"/>
-                    <path d="M-5,-5 L-11,1" stroke="#0ff" stroke-width="0.5"/>
-                    
-                    <!-- Right eye -->
-                    <rect x="4" y="-6" width="8" height="8" fill="#333" rx="1"/>
-                    <rect x="5" y="-5" width="6" height="6" fill="#0ff"/>
-                    <path d="M5,-5 L11,1" stroke="#0ff" stroke-width="0.5"/>
-                    <path d="M11,-5 L5,1" stroke="#0ff" stroke-width="0.5"/>
-                `,
-                side: `
-                    <rect x="4" y="-6" width="8" height="8" fill="#333" rx="1"/>
-                    <rect x="5" y="-5" width="6" height="6" fill="#0ff"/>
-                    <path d="M5,-5 L11,1" stroke="#0ff" stroke-width="0.5"/>
-                    <path d="M11,-5 L5,1" stroke="#0ff" stroke-width="0.5"/>
-                `
-            },
-            hypno: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <path d="M-8,-2 m-4,0 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" fill="none" stroke="black" stroke-width="1"/>
-                    <path d="M-8,-2 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0" fill="none" stroke="black" stroke-width="1"/>
-                    <path d="M-8,-2 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" fill="none" stroke="black" stroke-width="1"/>
-                    <circle cx="-8" cy="-2" r="1" fill="black"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="M8,-2 m-4,0 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" fill="none" stroke="black" stroke-width="1"/>
-                    <path d="M8,-2 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0" fill="none" stroke="black" stroke-width="1"/>
-                    <path d="M8,-2 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" fill="none" stroke="black" stroke-width="1"/>
-                    <circle cx="8" cy="-2" r="1" fill="black"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="M8,-2 m-4,0 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" fill="none" stroke="black" stroke-width="1"/>
-                    <path d="M8,-2 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0" fill="none" stroke="black" stroke-width="1"/>
-                    <path d="M8,-2 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" fill="none" stroke="black" stroke-width="1"/>
-                    <circle cx="8" cy="-2" r="1" fill="black"/>
-                `
-            },
-            anime: {
-                front: `
-                    <!-- Left eye -->
-                    <path d="M-13,-6 Q-8,-8 -3,-6 Q-8,-4 -13,-6 Z" fill="white"/>
-                    <circle cx="-8" cy="-6" r="2" fill="black"/>
-                    <circle cx="-7" cy="-7" r="0.5" fill="white"/>
-                    <path d="M-11,-3 Q-8,-1 -5,-3" fill="none" stroke="black" stroke-width="0.5"/>
-                    
-                    <!-- Right eye -->
-                    <path d="M3,-6 Q8,-8 13,-6 Q8,-4 3,-6 Z" fill="white"/>
-                    <circle cx="8" cy="-6" r="2" fill="black"/>
-                    <circle cx="9" cy="-7" r="0.5" fill="white"/>
-                    <path d="M5,-3 Q8,-1 11,-3" fill="none" stroke="black" stroke-width="0.5"/>
-                `,
-                side: `
-                    <path d="M3,-6 Q8,-8 13,-6 Q8,-4 3,-6 Z" fill="white"/>
-                    <circle cx="8" cy="-6" r="2" fill="black"/>
-                    <circle cx="9" cy="-7" r="0.5" fill="white"/>
-                    <path d="M5,-3 Q8,-1 11,-3" fill="none" stroke="black" stroke-width="0.5"/>
-                `
-            },
-            pixel: {
-                front: `
-                    <!-- Left eye -->
-                    <rect x="-11" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="-9" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="-7" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="-11" y="-3" width="2" height="2" fill="white"/>
-                    <rect x="-9" y="-3" width="2" height="2" fill="black"/>
-                    <rect x="-7" y="-3" width="2" height="2" fill="white"/>
-                    <rect x="-11" y="-1" width="2" height="2" fill="white"/>
-                    <rect x="-9" y="-1" width="2" height="2" fill="white"/>
-                    <rect x="-7" y="-1" width="2" height="2" fill="white"/>
-                    
-                    <!-- Right eye -->
-                    <rect x="5" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="7" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="9" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="5" y="-3" width="2" height="2" fill="white"/>
-                    <rect x="7" y="-3" width="2" height="2" fill="black"/>
-                    <rect x="9" y="-3" width="2" height="2" fill="white"/>
-                    <rect x="5" y="-1" width="2" height="2" fill="white"/>
-                    <rect x="7" y="-1" width="2" height="2" fill="white"/>
-                    <rect x="9" y="-1" width="2" height="2" fill="white"/>
-                `,
-                side: `
-                    <rect x="5" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="7" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="9" y="-5" width="2" height="2" fill="white"/>
-                    <rect x="5" y="-3" width="2" height="2" fill="white"/>
-                    <rect x="7" y="-3" width="2" height="2" fill="black"/>
-                    <rect x="9" y="-3" width="2" height="2" fill="white"/>
-                    <rect x="5" y="-1" width="2" height="2" fill="white"/>
-                    <rect x="7" y="-1" width="2" height="2" fill="white"/>
-                    <rect x="9" y="-1" width="2" height="2" fill="white"/>
-                `
-            },
-            heart: {
-                front: `
-                    <!-- Left eye -->
-                    <path d="
-                        M-8,-2
-                        l-4,-4
-                        c-2,-2 -4,2 -2,4
-                        c2,2 6,4 6,4
-                        c0,0 4,-2 6,-4
-                        c2,-2 0,-6 -2,-4
-                        z
-                    " fill="#ff6b6b"/>
-                    
-                    <!-- Right eye -->
-                    <path d="
-                        M8,-2
-                        l-4,-4
-                        c-2,-2 -4,2 -2,4
-                        c2,2 6,4 6,4
-                        c0,0 4,-2 6,-4
-                        c2,-2 0,-6 -2,-4
-                        z
-                    " fill="#ff6b6b"/>
-                `,
-                side: `
-                    <path d="
-                        M8,-2
-                        l-4,-4
-                        c-2,-2 -4,2 -2,4
-                        c2,2 6,4 6,4
-                        c0,0 4,-2 6,-4
-                        c2,-2 0,-6 -2,-4
-                        z
-                    " fill="#ff6b6b"/>
-                `
-            },
-            star: {
-                front: `
-                    <!-- Left eye -->
-                    <path d="
-                        M-8,-2
-                        l1.5,-4.5
-                        l1.5,4.5
-                        l4.5,-1.5
-                        l-4.5,1.5
-                        l1.5,4.5
-                        l-1.5,-4.5
-                        l-4.5,1.5
-                        l4.5,-1.5
-                        l-1.5,-4.5
-                        Z
-                    " fill="#ffd700"/>
-                    <circle cx="-8" cy="-2" r="1" fill="#fff"/>
-                    
-                    <!-- Right eye -->
-                    <path d="
-                        M8,-2
-                        l1.5,-4.5
-                        l1.5,4.5
-                        l4.5,-1.5
-                        l-4.5,1.5
-                        l1.5,4.5
-                        l-1.5,-4.5
-                        l-4.5,1.5
-                        l4.5,-1.5
-                        l-1.5,-4.5
-                        Z
-                    " fill="#ffd700"/>
-                    <circle cx="8" cy="-2" r="1" fill="#fff"/>
-                `,
-                side: `
-                    <path d="
-                        M8,-2
-                        l1.5,-4.5
-                        l1.5,4.5
-                        l4.5,-1.5
-                        l-4.5,1.5
-                        l1.5,4.5
-                        l-1.5,-4.5
-                        l-4.5,1.5
-                        l4.5,-1.5
-                        l-1.5,-4.5
-                        Z
-                    " fill="#ffd700"/>
-                    <circle cx="8" cy="-2" r="1" fill="#fff"/>
-                `
-            },
-            money: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#85bb65"/>
-                    <text x="-8" y="0" font-size="8" fill="white" text-anchor="middle" dominant-baseline="middle">$</text>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#85bb65"/>
-                    <text x="8" y="0" font-size="8" fill="white" text-anchor="middle" dominant-baseline="middle">$</text>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#85bb65"/>
-                    <text x="8" y="0" font-size="8" fill="white" text-anchor="middle" dominant-baseline="middle">$</text>
-                `
-            },
-            rainbow: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-8" cy="-2" r="5" fill="url(#rainbowGradient)"/>
-                    <circle cx="-8" cy="-2" r="2" fill="black"/>
-                    <circle cx="-9" cy="-3" r="0.5" fill="white"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="5" fill="url(#rainbowGradient)"/>
-                    <circle cx="8" cy="-2" r="2" fill="black"/>
-                    <circle cx="7" cy="-3" r="0.5" fill="white"/>
-                    
-                    <!-- Rainbow gradient definition -->
-                    <defs>
-                        <radialGradient id="rainbowGradient">
-                            <stop offset="0%" stop-color="#ff0000"/>
-                            <stop offset="17%" stop-color="#ff9900"/>
-                            <stop offset="33%" stop-color="#ffff00"/>
-                            <stop offset="50%" stop-color="#00ff00"/>
-                            <stop offset="67%" stop-color="#0099ff"/>
-                            <stop offset="83%" stop-color="#6633ff"/>
-                            <stop offset="100%" stop-color="#ff00ff"/>
-                        </radialGradient>
-                    </defs>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="5" fill="url(#rainbowGradient)"/>
-                    <circle cx="8" cy="-2" r="2" fill="black"/>
-                    <circle cx="7" cy="-3" r="0.5" fill="white"/>
-                    
-                    <!-- Rainbow gradient definition -->
-                    <defs>
-                        <radialGradient id="rainbowGradient">
-                            <stop offset="0%" stop-color="#ff0000"/>
-                            <stop offset="17%" stop-color="#ff9900"/>
-                            <stop offset="33%" stop-color="#ffff00"/>
-                            <stop offset="50%" stop-color="#00ff00"/>
-                            <stop offset="67%" stop-color="#0099ff"/>
-                            <stop offset="83%" stop-color="#6633ff"/>
-                            <stop offset="100%" stop-color="#ff00ff"/>
-                        </radialGradient>
-                    </defs>
-                `
-            },
-            cyclops: {
-                front: `
-                    <!-- Single large eye -->
-                    <circle cx="0" cy="-2" r="8" fill="white"/>
-                    <circle cx="0" cy="-2" r="6" fill="#ffcc00"/>
-                    <circle cx="0" cy="-2" r="3" fill="black"/>
-                    <circle cx="1" cy="-3" r="1" fill="white"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="8" fill="white"/>
-                    <circle cx="8" cy="-2" r="6" fill="#ffcc00"/>
-                    <circle cx="8" cy="-2" r="3" fill="black"/>
-                    <circle cx="9" cy="-3" r="1" fill="white"/>
-                `
-            },
-            alien: {
-                front: `
-                    <!-- Left eye cluster -->
-                    <circle cx="-10" cy="-4" r="3" fill="black"/>
-                    <circle cx="-10" cy="-4" r="1" fill="#00ff00"/>
-                    <circle cx="-6" cy="-2" r="3" fill="black"/>
-                    <circle cx="-6" cy="-2" r="1" fill="#00ff00"/>
-                    <circle cx="-8" cy="0" r="3" fill="black"/>
-                    <circle cx="-8" cy="0" r="1" fill="#00ff00"/>
-                    
-                    <!-- Right eye cluster -->
-                    <circle cx="10" cy="-4" r="3" fill="black"/>
-                    <circle cx="10" cy="-4" r="1" fill="#00ff00"/>
-                    <circle cx="6" cy="-2" r="3" fill="black"/>
-                    <circle cx="6" cy="-2" r="1" fill="#00ff00"/>
-                    <circle cx="8" cy="0" r="3" fill="black"/>
-                    <circle cx="8" cy="0" r="1" fill="#00ff00"/>
-                `,
-                side: `
-                    <!-- Side eye cluster -->
-                    <circle cx="10" cy="-4" r="3" fill="black"/>
-                    <circle cx="10" cy="-4" r="1" fill="#00ff00"/>
-                    <circle cx="6" cy="-2" r="3" fill="black"/>
-                    <circle cx="6" cy="-2" r="1" fill="#00ff00"/>
-                    <circle cx="8" cy="0" r="3" fill="black"/>
-                    <circle cx="8" cy="0" r="1" fill="#00ff00"/>
-                `
-            },
-            ghost: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white" opacity="0.5"/>
-                    <circle cx="-8" cy="-2" r="4" fill="#b3e0ff" opacity="0.7"/>
-                    <circle cx="-8" cy="-2" r="2" fill="#80ccff" opacity="0.9"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white" opacity="0.5"/>
-                    <circle cx="8" cy="-2" r="4" fill="#b3e0ff" opacity="0.7"/>
-                    <circle cx="8" cy="-2" r="2" fill="#80ccff" opacity="0.9"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white" opacity="0.5"/>
-                    <circle cx="8" cy="-2" r="4" fill="#b3e0ff" opacity="0.7"/>
-                    <circle cx="8" cy="-2" r="2" fill="#80ccff" opacity="0.9"/>
-                `
-            },
-            dragon: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#ffd700"/>
-                    <path d="M-12,-6 L-4,2" stroke="black" stroke-width="0.5"/>
-                    <ellipse cx="-8" cy="-2" rx="2" ry="4" fill="black" transform="rotate(-45, -8, -2)"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#ffd700"/>
-                    <path d="M4,2 L12,-6" stroke="black" stroke-width="0.5"/>
-                    <ellipse cx="8" cy="-2" rx="2" ry="4" fill="black" transform="rotate(45, 8, -2)"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#ffd700"/>
-                    <path d="M4,2 L12,-6" stroke="black" stroke-width="0.5"/>
-                    <ellipse cx="8" cy="-2" rx="2" ry="4" fill="black" transform="rotate(45, 8, -2)"/>
-                `
-            },
-            demon: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#300"/>
-                    <circle cx="-8" cy="-2" r="4" fill="#f00"/>
-                    <circle cx="-8" cy="-2" r="2" fill="black"/>
-                    <path d="M-12,-6 L-4,2 M-4,-6 L-12,2" stroke="#f00" stroke-width="0.5"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#300"/>
-                    <circle cx="8" cy="-2" r="4" fill="#f00"/>
-                    <circle cx="8" cy="-2" r="2" fill="black"/>
-                    <path d="M4,-6 L12,2 M12,-6 L4,2" stroke="#f00" stroke-width="0.5"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#300"/>
-                    <circle cx="8" cy="-2" r="4" fill="#f00"/>
-                    <circle cx="8" cy="-2" r="2" fill="black"/>
-                    <path d="M4,-6 L12,2 M12,-6 L4,2" stroke="#f00" stroke-width="0.5"/>
-                `
-            },
-            cyborg: {
-                front: `
-                    <!-- Left eye (normal) -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-8" cy="-2" r="4" fill="black"/>
-                    <circle cx="-9" cy="-3" r="1.5" fill="white"/>
-                    
-                    <!-- Right eye (mechanical) -->
-                    <rect x="4" y="-6" width="8" height="8" fill="#333" rx="1"/>
-                    <circle cx="8" cy="-2" r="3" fill="#0ff"/>
-                    <path d="M5,-5 L11,1 M11,-5 L5,1" stroke="#0ff" stroke-width="0.5"/>
-                    <circle cx="8" cy="-2" r="1" fill="#fff"/>
-                    <!-- Mechanical details -->
-                    <path d="M3,-6 L13,-6" stroke="#666" stroke-width="0.5"/>
-                    <path d="M3,2 L13,2" stroke="#666" stroke-width="0.5"/>
-                    <circle cx="12" cy="-4" r="0.5" fill="#0ff"/>
-                `,
-                side: `
-                    <!-- Mechanical eye -->
-                    <rect x="4" y="-6" width="8" height="8" fill="#333" rx="1"/>
-                    <circle cx="8" cy="-2" r="3" fill="#0ff"/>
-                    <path d="M5,-5 L11,1 M11,-5 L5,1" stroke="#0ff" stroke-width="0.5"/>
-                    <circle cx="8" cy="-2" r="1" fill="#fff"/>
-                    <!-- Mechanical details -->
-                    <path d="M3,-6 L13,-6" stroke="#666" stroke-width="0.5"/>
-                    <path d="M3,2 L13,2" stroke="#666" stroke-width="0.5"/>
-                    <circle cx="12" cy="-4" r="0.5" fill="#0ff"/>
-                `
-            },
-            dizzy: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <path d="
-                        M-8,-2
-                        m-3,-3 l6,6
-                        m0,-6 l-6,6
-                        m-1,-3 l8,0
-                        m-4,-4 l0,8
-                    " stroke="black" stroke-width="1"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="
-                        M8,-2
-                        m-3,-3 l6,6
-                        m0,-6 l-6,6
-                        m-1,-3 l8,0
-                        m-4,-4 l0,8
-                    " stroke="black" stroke-width="1"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <path d="
-                        M8,-2
-                        m-3,-3 l6,6
-                        m0,-6 l-6,6
-                        m-1,-3 l8,0
-                        m-4,-4 l0,8
-                    " stroke="black" stroke-width="1"/>
-                `
-            },
-            glitch: {
-                front: `
-                    <!-- Left eye -->
-                    <g transform="translate(-8,-2)">
-                        <rect x="-4" y="-4" width="8" height="8" fill="#0ff" opacity="0.5"/>
-                        <rect x="-3" y="-3" width="6" height="6" fill="#f0f" opacity="0.5"/>
-                        <rect x="-2" y="-2" width="4" height="4" fill="#ff0" opacity="0.5"/>
-                    </g>
-                    
-                    <!-- Right eye -->
-                    <g transform="translate(8,-2)">
-                        <rect x="-4" y="-4" width="8" height="8" fill="#0ff" opacity="0.5"/>
-                        <rect x="-3" y="-3" width="6" height="6" fill="#f0f" opacity="0.5"/>
-                        <rect x="-2" y="-2" width="4" height="4" fill="#ff0" opacity="0.5"/>
-                    </g>
-                    <!-- Glitch lines -->
-                    <path d="M-15,-5 L15,-5" stroke="#0ff" stroke-width="0.5" opacity="0.8"/>
-                    <path d="M-15,0 L15,0" stroke="#f0f" stroke-width="0.5" opacity="0.8"/>
-                    <path d="M-15,3 L15,3" stroke="#ff0" stroke-width="0.5" opacity="0.8"/>
-                `,
-                side: `
-                    <g transform="translate(8,-2)">
-                        <rect x="-4" y="-4" width="8" height="8" fill="#0ff" opacity="0.5"/>
-                        <rect x="-3" y="-3" width="6" height="6" fill="#f0f" opacity="0.5"/>
-                        <rect x="-2" y="-2" width="4" height="4" fill="#ff0" opacity="0.5"/>
-                    </g>
-                    <!-- Glitch lines -->
-                    <path d="M0,-5 L15,-5" stroke="#0ff" stroke-width="0.5" opacity="0.8"/>
-                    <path d="M0,0 L15,0" stroke="#f0f" stroke-width="0.5" opacity="0.8"/>
-                    <path d="M0,3 L15,3" stroke="#ff0" stroke-width="0.5" opacity="0.8"/>
-                `
-            },
-            cosmic: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#000"/>
-                    <circle cx="-8" cy="-2" r="4" fill="#1a1a3a"/>
-                    <circle cx="-10" cy="-4" r="0.5" fill="#fff"/>
-                    <circle cx="-6" cy="-1" r="0.3" fill="#fff"/>
-                    <circle cx="-8" cy="0" r="0.4" fill="#fff"/>
-                    <path d="M-11,-5 Q-8,-2 -5,-5" stroke="#5d4dff" stroke-width="0.5" opacity="0.6"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#000"/>
-                    <circle cx="8" cy="-2" r="4" fill="#1a1a3a"/>
-                    <circle cx="6" cy="-4" r="0.5" fill="#fff"/>
-                    <circle cx="10" cy="-1" r="0.3" fill="#fff"/>
-                    <circle cx="8" cy="0" r="0.4" fill="#fff"/>
-                    <path d="M5,-5 Q8,-2 11,-5" stroke="#5d4dff" stroke-width="0.5" opacity="0.6"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#000"/>
-                    <circle cx="8" cy="-2" r="4" fill="#1a1a3a"/>
-                    <circle cx="6" cy="-4" r="0.5" fill="#fff"/>
-                    <circle cx="10" cy="-1" r="0.3" fill="#fff"/>
-                    <circle cx="8" cy="0" r="0.4" fill="#fff"/>
-                    <path d="M5,-5 Q8,-2 11,-5" stroke="#5d4dff" stroke-width="0.5" opacity="0.6"/>
-                `
-            },
-            cat: {
-                front: `
-                    <!-- Left eye -->
-                    <path d="M-12,-6 Q-8,-8 -4,-6 Q-8,-4 -12,-6 Z" fill="white"/>
-                    <ellipse cx="-8" cy="-6" rx="1.5" ry="3" fill="black" transform="rotate(-15, -8, -6)"/>
-                    <path d="M-9,-7 L-7,-5" stroke="#ffeb3b" stroke-width="0.5"/>
-                    
-                    <!-- Right eye -->
-                    <path d="M4,-6 Q8,-8 12,-6 Q8,-4 4,-6 Z" fill="white"/>
-                    <ellipse cx="8" cy="-6" rx="1.5" ry="3" fill="black" transform="rotate(15, 8, -6)"/>
-                    <path d="M7,-7 L9,-5" stroke="#ffeb3b" stroke-width="0.5"/>
-                `,
-                side: `
-                    <path d="M4,-6 Q8,-8 12,-6 Q8,-4 4,-6 Z" fill="white"/>
-                    <ellipse cx="8" cy="-6" rx="1.5" ry="3" fill="black" transform="rotate(15, 8, -6)"/>
-                    <path d="M7,-7 L9,-5" stroke="#ffeb3b" stroke-width="0.5"/>
-                `
-            },
-            zombie: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#a8e6cf"/>
-                    <path d="M-11,-5 L-5,1 M-5,-5 L-11,1" stroke="#2d3436" stroke-width="0.5"/>
-                    <circle cx="-8" cy="-2" r="3" fill="#636e72"/>
-                    <circle cx="-8" cy="-2" r="1" fill="#2d3436"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#a8e6cf"/>
-                    <path d="M5,-5 L11,1 M11,-5 L5,1" stroke="#2d3436" stroke-width="0.5"/>
-                    <circle cx="8" cy="-2" r="3" fill="#636e72"/>
-                    <circle cx="8" cy="-2" r="1" fill="#2d3436"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#a8e6cf"/>
-                    <path d="M5,-5 L11,1 M11,-5 L5,1" stroke="#2d3436" stroke-width="0.5"/>
-                    <circle cx="8" cy="-2" r="3" fill="#636e72"/>
-                    <circle cx="8" cy="-2" r="1" fill="#2d3436"/>
-                `
-            },
-            fire: {
-                front: `
-                    <!-- Left eye -->
-                    <defs>
-                        <radialGradient id="fireGradient">
-                            <stop offset="0%" stop-color="#fff"/>
-                            <stop offset="30%" stop-color="#ff0"/>
-                            <stop offset="70%" stop-color="#f40"/>
-                            <stop offset="100%" stop-color="#900"/>
-                        </radialGradient>
-                    </defs>
-                    <circle cx="-8" cy="-2" r="6" fill="url(#fireGradient)"/>
-                    <path d="
-                        M-8,-2
-                        c-1,-2 1,-4 2,-5
-                        c1,2 -1,4 -2,5
-                        M-8,-2
-                        c1,-2 -1,-4 -2,-5
-                        c-1,2 1,4 2,5
-                    " fill="none" stroke="#f40" stroke-width="0.5"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="url(#fireGradient)"/>
-                    <path d="
-                        M8,-2
-                        c-1,-2 1,-4 2,-5
-                        c1,2 -1,4 -2,5
-                        M8,-2
-                        c1,-2 -1,-4 -2,-5
-                        c-1,2 1,4 2,5
-                    " fill="none" stroke="#f40" stroke-width="0.5"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="url(#fireGradient)"/>
-                    <path d="
-                        M8,-2
-                        c-1,-2 1,-4 2,-5
-                        c1,2 -1,4 -2,5
-                        M8,-2
-                        c1,-2 -1,-4 -2,-5
-                        c-1,2 1,4 2,5
-                    " fill="none" stroke="#f40" stroke-width="0.5"/>
-                `
-            },
-            ice: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#e3f2fd"/>
-                    <path d="
-                        M-8,-2 l0,-5
-                        M-8,-2 l4.33,2.5
-                        M-8,-2 l-4.33,2.5
-                        M-8,-2 l0,5
-                        M-8,-2 l4.33,-2.5
-                        M-8,-2 l-4.33,-2.5
-                    " stroke="#90caf9" stroke-width="1"/>
-                    <circle cx="-8" cy="-2" r="2" fill="#1976d2"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#e3f2fd"/>
-                    <path d="
-                        M8,-2 l0,-5
-                        M8,-2 l4.33,2.5
-                        M8,-2 l-4.33,2.5
-                        M8,-2 l0,5
-                        M8,-2 l4.33,-2.5
-                        M8,-2 l-4.33,-2.5
-                    " stroke="#90caf9" stroke-width="1"/>
-                    <circle cx="8" cy="-2" r="2" fill="#1976d2"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#e3f2fd"/>
-                    <path d="
-                        M8,-2 l0,-5
-                        M8,-2 l4.33,2.5
-                        M8,-2 l-4.33,2.5
-                        M8,-2 l0,5
-                        M8,-2 l4.33,-2.5
-                        M8,-2 l-4.33,-2.5
-                    " stroke="#90caf9" stroke-width="1"/>
-                    <circle cx="8" cy="-2" r="2" fill="#1976d2"/>
-                `
-            },
-            void: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#000"/>
-                    <circle cx="-8" cy="-2" r="4" fill="#1a1a1a"/>
-                    <circle cx="-8" cy="-2" r="2" fill="#000"/>
-                    <path d="M-11,-5 C-8,-2 -5,-5 -5,-5" stroke="#333" stroke-width="0.5" opacity="0.5"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#000"/>
-                    <circle cx="8" cy="-2" r="4" fill="#1a1a1a"/>
-                    <circle cx="8" cy="-2" r="2" fill="#000"/>
-                    <path d="M5,-5 C8,-2 11,-5 11,-5" stroke="#333" stroke-width="0.5" opacity="0.5"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#000"/>
-                    <circle cx="8" cy="-2" r="4" fill="#1a1a1a"/>
-                    <circle cx="8" cy="-2" r="2" fill="#000"/>
-                    <path d="M5,-5 C8,-2 11,-5 11,-5" stroke="#333" stroke-width="0.5" opacity="0.5"/>
-                `
-            },
-            ancient: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="#d4af37"/>
-                    <path d="
-                        M-11,-5 h6
-                        M-11,1 h6
-                        M-8,-5 v6
-                        M-11,-2 h6
-                    " stroke="#000" stroke-width="0.5"/>
-                    <circle cx="-8" cy="-2" r="2" fill="#000"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="#d4af37"/>
-                    <path d="
-                        M5,-5 h6
-                        M5,1 h6
-                        M8,-5 v6
-                        M5,-2 h6
-                    " stroke="#000" stroke-width="0.5"/>
-                    <circle cx="8" cy="-2" r="2" fill="#000"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="#d4af37"/>
-                    <path d="
-                        M5,-5 h6
-                        M5,1 h6
-                        M8,-5 v6
-                        M5,-2 h6
-                    " stroke="#000" stroke-width="0.5"/>
-                    <circle cx="8" cy="-2" r="2" fill="#000"/>
-                `
-            }
-        };
-
-        const beakVariants = {
-            normal: {
-                front: `
-                    <path d="
-                        M0,0
-                        l-4,4
-                        l8,0
-                        z"
-                        fill="#FFA000"
-                    />
-                `,
-                side: `
-                    <path d="
-                        M10,0
-                        l12,0
-                        l-6,4
-                        z"
-                        fill="#FFA000"
-                    />
-                `
-            }
-        };
-
-        const topVariants = {
-            normal: {
-                front: `
-                    <path d="
-                        M0,-20
-                        C5,-25 10,-20 15,-15
-                        C10,-18 5,-18 0,-20
-                        C-5,-18 -10,-18 -15,-15
-                        C-10,-20 -5,-25 0,-20
-                        Z"
-                        fill="#FF5252"
-                    />
-                `,
-                side: `
-                    <path d="
-                        M0,-20
-                        C5,-25 10,-20 15,-15
-                        C10,-18 5,-18 0,-20
-                        Z"
-                        fill="#FF5252"
-                    />
-                `
-            }
-        };
-
-        console.log('Current eye variant:', this.currentTraits.eyes);
-        
         // Define front view components
         const frontBody = `
             <g id="chicken-body-front">
@@ -1354,14 +654,14 @@ class ChickenLab {
                 
                 <!-- Eyes -->
                 <g class="eyes">
-                    ${eyeVariants[this.currentTraits.eyes].front}
+                    ${this.eyeVariants[this.currentTraits.eyes].front}
                 </g>
 
                 <!-- Beak -->
-                ${beakVariants[this.currentTraits.beak].front}
+                ${this.beakVariants[this.currentTraits.beak].front}
 
                 <!-- Comb -->
-                ${topVariants[this.currentTraits.top].front}
+                ${this.topVariants[this.currentTraits.top].front}
 
                 <!-- Wattles -->
                 <path d="
@@ -1490,14 +790,14 @@ class ChickenLab {
                 
                 <!-- Eye -->
                 <g class="eyes">
-                    ${eyeVariants[this.currentTraits.eyes].side}
+                    ${this.eyeVariants[this.currentTraits.eyes].side}
                 </g>
 
                 <!-- Beak -->
-                ${beakVariants[this.currentTraits.beak].side}
+                ${this.beakVariants[this.currentTraits.beak].side}
 
                 <!-- Comb -->
-                ${topVariants[this.currentTraits.top].side}
+                ${this.topVariants[this.currentTraits.top].side}
 
                 <!-- Wattle -->
                 <path d="
@@ -1866,7 +1166,15 @@ class ChickenLab {
                     variantBox.innerHTML = `
                         <div class="variant-preview">🐔</div>
                         <div class="variant-name">${variant.name}</div>
+                        <button class="edit-trait-btn" title="Edit SVG">✏️</button>
                     `;
+                    
+                    // Add edit button handler
+                    const editBtn = variantBox.querySelector('.edit-trait-btn');
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.svgEditor.show(trait.type, key);
+                    });
                     
                     variantBox.addEventListener('click', () => {
                         // Update trait
@@ -1992,7 +1300,15 @@ class ChickenLab {
                 <div class="trait-preview">🐔</div>
                 <div class="trait-name">${variant.name}</div>
                 <div class="trait-description">${variant.description}</div>
+                <button class="edit-trait-btn" title="Edit SVG">✏️</button>
             `;
+            
+            // Add edit button handler
+            const editBtn = traitCard.querySelector('.edit-trait-btn');
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.svgEditor.show(traitType, variantKey);
+            });
             
             traitCard.addEventListener('click', () => {
                 // Update trait
@@ -2087,10 +1403,10 @@ class ChickenLab {
                 // Body has a subtle bounce
                 this.currentAnimation = bodyBone.animate([
                     { transform: 'translate(50px, 50px)' },
-                    { transform: 'translate(50px, 48px)' },
+                    { transform: 'translate(50px, 49.5px)' },
                     { transform: 'translate(50px, 50px)' }
                 ], {
-                    duration: 1000,
+                    duration: 1200,
                     iterations: Infinity,
                     easing: 'ease-in-out'
                 });
@@ -2098,34 +1414,37 @@ class ChickenLab {
                 // Head has a slightly more pronounced bob
                 headBone.animate([
                     { transform: this.currentView === 'front' ? 'translate(0px, -25px)' : 'translate(25px, -25px)' },
-                    { transform: this.currentView === 'front' ? 'translate(0px, -23px)' : 'translate(25px, -23px)' },
+                    { transform: this.currentView === 'front' ? 'translate(0px, -25.5px)' : 'translate(25px, -25.5px)' },
                     { transform: this.currentView === 'front' ? 'translate(0px, -25px)' : 'translate(25px, -25px)' }
                 ], {
-                    duration: 1000,
+                    duration: 1200,
                     iterations: Infinity,
-                    easing: 'ease-in-out'
+                    easing: 'ease-in-out',
+                    delay: 100 // Slight delay for more natural feel
                 });
 
-                // Legs have a subtle flex at the top while keeping feet planted
+                // Legs stay planted while body moves
                 const idleLegFrontPos = this.currentView === 'front' ? '10px, 25px' : '5px, 25px';
                 const idleLegBackPos = this.currentView === 'front' ? '-10px, 25px' : '-5px, 25px';
                 
+                // Front leg animation - counteracts body movement to stay planted
                 legFront.animate([
-                    { transform: `translate(${idleLegFrontPos})` },
-                    { transform: `translate(${idleLegFrontPos}) rotate(-1deg)` },
-                    { transform: `translate(${idleLegFrontPos})` }
+                    { transform: `translate(${idleLegFrontPos}) rotate(0deg)` },
+                    { transform: `translate(${idleLegFrontPos}) translate(0, 1.5px) rotate(-2deg)` },
+                    { transform: `translate(${idleLegFrontPos}) rotate(0deg)` }
                 ], {
-                    duration: 1000,
+                    duration: 1200,
                     iterations: Infinity,
                     easing: 'ease-in-out'
                 });
 
+                // Back leg animation - counteracts body movement to stay planted
                 legBack.animate([
-                    { transform: `translate(${idleLegBackPos})` },
-                    { transform: `translate(${idleLegBackPos}) rotate(1deg)` },
-                    { transform: `translate(${idleLegBackPos})` }
+                    { transform: `translate(${idleLegBackPos}) rotate(0deg)` },
+                    { transform: `translate(${idleLegBackPos}) translate(0, 1.5px) rotate(2deg)` },
+                    { transform: `translate(${idleLegBackPos}) rotate(0deg)` }
                 ], {
-                    duration: 1000,
+                    duration: 1200,
                     iterations: Infinity,
                     easing: 'ease-in-out'
                 });
@@ -2250,9 +1569,260 @@ class ChickenLab {
             this.isAnimating = false;
         }
     }
+
+    updatePreview() {
+        // Get the SVG content based on trait type
+        let variantContent;
+        const variantKey = this.currentTraits[this.currentTrait];
+        
+        switch (this.currentTrait) {
+            case 'eyes':
+                variantContent = this.eyeVariants[variantKey][this.currentView];
+                break;
+            case 'beak':
+                variantContent = this.beakVariants[variantKey][this.currentView];
+                break;
+            case 'top':
+                variantContent = this.topVariants[variantKey][this.currentView];
+                break;
+            default:
+                console.warn('Trait type not supported yet:', this.currentTrait);
+                return;
+        }
+
+        if (!variantContent) return;
+
+        this.svgContent.innerHTML = variantContent;
+        this.updateCodeEditor();
+    }
 }
 
 // Initialize the lab when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     window.chickenLab = new ChickenLab();
+    
+    // Initialize each variant to have its own copy of SVG data
+    const initializeVariantData = () => {
+        // Check if already initialized
+        if (localStorage.getItem('variants_initialized')) {
+            return;
+        }
+        
+        // Clone the default data for each variant
+        const traitTypes = ['eyes', 'beak', 'top'];
+        const views = ['front', 'side'];
+        
+        for (const traitType of traitTypes) {
+            const variants = window.chickenLab.traitDefinitions[traitType].variants;
+            // Get the default variant's data
+            const defaultVariantKey = Object.keys(variants)[0];
+            const defaultVariantData = {};
+            
+            // Store original data for default variant
+            for (const view of views) {
+                switch (traitType) {
+                    case 'eyes':
+                        defaultVariantData[view] = window.chickenLab.eyeVariants.normal[view];
+                        break;
+                    case 'beak':
+                        defaultVariantData[view] = window.chickenLab.beakVariants.normal[view];
+                        break;
+                    case 'top':
+                        defaultVariantData[view] = window.chickenLab.topVariants.normal[view];
+                        break;
+                }
+            }
+            
+            // Now create unique copies for each variant
+            for (const variantKey of Object.keys(variants)) {
+                if (variantKey === defaultVariantKey) continue; // Skip default
+                
+                for (const view of views) {
+                    // Check if we already have saved data
+                    const storageKey = `trait_${traitType}_${variantKey}_${view}`;
+                    if (!localStorage.getItem(storageKey)) {
+                        // No saved data, use default with a comment to mark it as a unique copy
+                        const defaultData = defaultVariantData[view];
+                        const variantData = defaultData + `\n<!-- ${traitType} variant: ${variantKey} -->`;
+                        localStorage.setItem(storageKey, variantData);
+                        
+                        // Update in-memory data
+                        switch (traitType) {
+                            case 'eyes':
+                                if (!window.chickenLab.eyeVariants[variantKey]) {
+                                    window.chickenLab.eyeVariants[variantKey] = {};
+                                }
+                                window.chickenLab.eyeVariants[variantKey][view] = variantData;
+                                break;
+                            case 'beak':
+                                if (!window.chickenLab.beakVariants[variantKey]) {
+                                    window.chickenLab.beakVariants[variantKey] = {};
+                                }
+                                window.chickenLab.beakVariants[variantKey][view] = variantData;
+                                break;
+                            case 'top':
+                                if (!window.chickenLab.topVariants[variantKey]) {
+                                    window.chickenLab.topVariants[variantKey] = {};
+                                }
+                                window.chickenLab.topVariants[variantKey][view] = variantData;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Mark as initialized
+        localStorage.setItem('variants_initialized', 'true');
+        
+        // Reload base components
+        window.chickenLab.defineBaseComponents();
+        window.chickenLab.createChicken();
+    };
+    
+    // Initialize variant data
+    initializeVariantData();
+    
+    // Load any saved variants from localStorage
+    const loadSavedVariants = () => {
+        const traitTypes = ['eyes', 'beak', 'top'];
+        const views = ['front', 'side'];
+        
+        for (const traitType of traitTypes) {
+            const variants = window.chickenLab.traitDefinitions[traitType].variants;
+            
+            for (const variantKey of Object.keys(variants)) {
+                for (const view of views) {
+                    const storageKey = `trait_${traitType}_${variantKey}_${view}`;
+                    const savedData = localStorage.getItem(storageKey);
+                    
+                    if (savedData) {
+                        // Update in-memory data
+                        switch (traitType) {
+                            case 'eyes':
+                                if (!window.chickenLab.eyeVariants[variantKey]) {
+                                    window.chickenLab.eyeVariants[variantKey] = {};
+                                }
+                                window.chickenLab.eyeVariants[variantKey][view] = savedData;
+                                break;
+                            case 'beak':
+                                if (!window.chickenLab.beakVariants[variantKey]) {
+                                    window.chickenLab.beakVariants[variantKey] = {};
+                                }
+                                window.chickenLab.beakVariants[variantKey][view] = savedData;
+                                break;
+                            case 'top':
+                                if (!window.chickenLab.topVariants[variantKey]) {
+                                    window.chickenLab.topVariants[variantKey] = {};
+                                }
+                                window.chickenLab.topVariants[variantKey][view] = savedData;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Reload base components
+        window.chickenLab.defineBaseComponents();
+        window.chickenLab.createChicken();
+    };
+    
+    // Load saved variants
+    loadSavedVariants();
+}); 
+
+// SVG Editor Integration
+document.addEventListener('DOMContentLoaded', () => {
+    // Load the SVG Editor script
+    const loadSvgEditor = () => {
+        return new Promise((resolve, reject) => {
+            if (document.getElementById('svg-editor-script')) {
+                resolve();
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.id = 'svg-editor-script';
+            script.src = 'src/js/svg-editor.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    };
+
+    // Load the script and then set up the UI integration
+    loadSvgEditor()
+        .then(() => {
+            console.log('SVG Editor loaded successfully');
+            
+            // Only add edit buttons to eye, beak, and top traits for now
+            const editableTraitTypes = ['eyes', 'beak', 'top'];
+            
+            // Add buttons to trait items in accordions
+            const addEditButtonsToExistingItems = () => {
+                // Add edit buttons to variant boxes in the trait sections
+                document.querySelectorAll('.variant-box').forEach(item => {
+                    const traitSection = item.closest('.trait-group');
+                    if (!traitSection) return;
+                    
+                    const traitTitle = traitSection.querySelector('.trait-title');
+                    if (!traitTitle) return;
+                    
+                    const traitName = traitTitle.textContent.toLowerCase();
+                    
+                    // Check if it's an editable trait type
+                    if (editableTraitTypes.some(type => traitName.includes(type))) {
+                        const variantName = item.querySelector('.variant-name').textContent;
+                        // Get the trait type from the trait definitions
+                        const traitType = editableTraitTypes.find(type => traitName.includes(type));
+                        if (traitType && window.addEditButtonToTraitItem) {
+                            window.addEditButtonToTraitItem(item, traitType, variantName);
+                        }
+                    }
+                });
+                
+                // Add edit buttons to trait cards in catalogs
+                document.querySelectorAll('.trait-card').forEach(item => {
+                    const modal = item.closest('.trait-modal');
+                    if (!modal) return;
+                    
+                    const modalTitle = modal.querySelector('h3');
+                    if (!modalTitle) return;
+                    
+                    const titleText = modalTitle.textContent.toLowerCase();
+                    
+                    // Check if it's an editable trait type
+                    if (editableTraitTypes.some(type => titleText.includes(type))) {
+                        const variantName = item.querySelector('.trait-name').textContent;
+                        // Get the trait type from the trait definitions
+                        const traitType = editableTraitTypes.find(type => titleText.includes(type));
+                        if (traitType && window.addEditButtonToTraitItem) {
+                            window.addEditButtonToTraitItem(item, traitType, variantName);
+                        }
+                    }
+                });
+            };
+            
+            // Initial button addition
+            addEditButtonsToExistingItems();
+            
+            // Override the trait UI setup to add edit buttons to new items
+            const originalSetupTraitUI = window.chickenLab.setupTraitUI;
+            window.chickenLab.setupTraitUI = function() {
+                originalSetupTraitUI.apply(this, arguments);
+                addEditButtonsToExistingItems();
+            };
+            
+            // Override the trait catalog open function to add edit buttons
+            const originalOpenTraitCatalog = window.chickenLab.openTraitCatalog;
+            window.chickenLab.openTraitCatalog = function() {
+                originalOpenTraitCatalog.apply(this, arguments);
+                // Wait a bit for the DOM to update
+                setTimeout(addEditButtonsToExistingItems, 100);
+            };
+        })
+        .catch(error => {
+            console.error('Failed to load SVG Editor:', error);
+        });
 }); 
