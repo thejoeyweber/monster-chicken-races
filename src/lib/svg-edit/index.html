@@ -333,8 +333,33 @@
             stroke: red;
             stroke-width: 0.5;
             r: 1.5;
-            pointer-events: none;
+            pointer-events: all; /* Allow interaction with points */
+            cursor: move;
             vector-effect: non-scaling-stroke;
+        }
+        /* Add CSS for the view toggle buttons */
+        .view-toggle {
+            display: flex;
+            margin-bottom: 10px;
+            background: #3a3a3a;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .view-toggle-button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: #4a4a4a;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .view-toggle-button:hover {
+            background: #5a5a5a;
+        }
+        .view-toggle-button.active {
+            background: #e63946;
         }
     </style>
 </head>
@@ -1209,6 +1234,74 @@
                 return svgPoint;
             }
             
+            // Get the complete transform matrix for an element including all parent transforms
+            getElementTransformMatrix(element) {
+                if (!element) return null;
+                
+                try {
+                    // Get the consolidated transform matrix by checking if there's a transform 
+                    // and walking up the parent chain
+                    return element.getScreenCTM().inverse().multiply(this.content.getScreenCTM());
+                } catch (e) {
+                    console.error("Error getting transform matrix:", e);
+                    return null;
+                }
+            }
+            
+            // Transform a point from raw coordinates to screen coordinates
+            transformPoint(x, y, element) {
+                try {
+                    // Create SVG point
+                    const pt = this.editCanvas.createSVGPoint();
+                    pt.x = x;
+                    pt.y = y;
+                    
+                    // Get element's transform matrix
+                    const matrix = element.getScreenCTM();
+                    
+                    if (matrix) {
+                        // Apply transform to get screen coordinates
+                        const transformedPt = pt.matrixTransform(matrix);
+                        
+                        // Convert back to SVG coordinate space
+                        const svgTransformedPt = transformedPt.matrixTransform(this.editCanvas.getScreenCTM().inverse());
+                        
+                        return svgTransformedPt;
+                    }
+                    
+                    return pt;
+                } catch (e) {
+                    console.error("Error transforming point:", e);
+                    return { x, y }; // Return original if transform fails
+                }
+            }
+            
+            // Transform a point from screen coordinates back to raw coordinates
+            inverseTransformPoint(x, y, element) {
+                try {
+                    // Create SVG point
+                    const pt = this.editCanvas.createSVGPoint();
+                    pt.x = x;
+                    pt.y = y;
+                    
+                    // Get element's inverse transform matrix
+                    const matrix = element.getScreenCTM();
+                    
+                    if (matrix && matrix.inverse) {
+                        // Apply inverse transform to get raw coordinates
+                        const invMatrix = matrix.inverse();
+                        const rawPt = pt.matrixTransform(invMatrix);
+                        
+                        return rawPt;
+                    }
+                    
+                    return pt;
+                } catch (e) {
+                    console.error("Error inverse transforming point:", e);
+                    return { x, y }; // Return original if transform fails
+                }
+            }
+            
             // Element modification methods
             deleteSelected() {
                 if (this.selectedElement && this.selectedElement.parentNode) {
@@ -1601,6 +1694,19 @@
                     header.style.color = '#aaa';
                     container.appendChild(header);
                     
+                    // Add button to show all points at once
+                    const showAllBtn = document.createElement('button');
+                    showAllBtn.className = 'tool-button';
+                    showAllBtn.textContent = 'Show All Points';
+                    showAllBtn.style.fontSize = '11px';
+                    showAllBtn.style.padding = '3px 6px';
+                    showAllBtn.style.marginBottom = '8px';
+                    showAllBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.showAllPathPoints(pathElement);
+                    });
+                    container.appendChild(showAllBtn);
+                    
                     for (const cmd of commands) {
                         const type = cmd[0].toUpperCase();
                         const params = cmd.substring(1).trim().split(/[\s,]+/).filter(p => p.length > 0);
@@ -1671,24 +1777,178 @@
                     // Clear existing indicators first
                     this.clearPointIndicators();
                     
-                    // Create a new indicator
+                    // Create a new indicator at the original coordinates
                     const indicator = document.createElementNS(this.ns, 'circle');
                     indicator.setAttribute('cx', x);
                     indicator.setAttribute('cy', y);
                     indicator.setAttribute('class', 'point-indicator');
                     
-                    // If we have the path element, apply the same transform to the indicator
-                    if (pathElement && pathElement.hasAttribute('transform')) {
-                        const transform = pathElement.getAttribute('transform');
-                        indicator.setAttribute('transform', transform);
-                        console.log(`Applied transform ${transform} to point indicator`);
+                    // Store original coordinates and path reference for editing
+                    indicator.dataset.originalX = x;
+                    indicator.dataset.originalY = y;
+                    indicator.dataset.pathId = pathElement.id;
+                    
+                    // Get the proper transform for this path element
+                    const cumulativeTransform = this.getCumulativeTransform(pathElement);
+                    if (cumulativeTransform) {
+                        indicator.setAttribute('transform', cumulativeTransform);
+                        console.log(`Applied transform ${cumulativeTransform} to point indicator`);
                     }
                     
+                    // Add drag functionality to the point
+                    this.addPointDragBehavior(indicator, pathElement);
+                    
+                    // Add to UI layer
                     this.pointHandles.appendChild(indicator);
                     
                     console.log(`Point indicator added at (${x}, ${y})`);
                 } catch (e) {
                     console.error("Error showing point indicator:", e);
+                }
+            }
+            
+            // Get cumulative transform by walking up the DOM tree
+            getCumulativeTransform(element) {
+                if (!element) return '';
+                
+                let currentElement = element;
+                const transforms = [];
+                
+                // Walk up the DOM tree to collect all transforms
+                while (currentElement && currentElement !== this.content) {
+                    const transform = currentElement.getAttribute('transform');
+                    if (transform) {
+                        transforms.unshift(transform); // Add to beginning
+                    }
+                    currentElement = currentElement.parentNode;
+                }
+                
+                // Combine all transforms
+                return transforms.join(' ');
+            }
+            
+            // Add drag behavior to a point indicator
+            addPointDragBehavior(indicator, pathElement) {
+                if (!indicator || !pathElement) return;
+                
+                indicator.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    
+                    // Get original coordinates
+                    const originalX = parseFloat(indicator.dataset.originalX);
+                    const originalY = parseFloat(indicator.dataset.originalY);
+                    
+                    // Get current mouse position
+                    const startPoint = this.getSVGPoint(e);
+                    
+                    // Setup point drag state
+                    this.pointDragState = {
+                        indicator: indicator,
+                        pathElement: pathElement,
+                        startX: startPoint.x,
+                        startY: startPoint.y,
+                        originalX: originalX,
+                        originalY: originalY
+                    };
+                    
+                    // Add drag event listeners
+                    document.addEventListener('mousemove', this.handlePointDragMove);
+                    document.addEventListener('mouseup', this.handlePointDragEnd);
+                    
+                    console.log(`Starting point drag at (${originalX}, ${originalY})`);
+                });
+                
+                // Bind the handlers to this instance
+                this.handlePointDragMove = this.handlePointDragMove.bind(this);
+                this.handlePointDragEnd = this.handlePointDragEnd.bind(this);
+            }
+            
+            // Handle point dragging
+            handlePointDragMove(e) {
+                if (!this.pointDragState) return;
+                
+                // Get current mouse position
+                const currentPoint = this.getSVGPoint(e);
+                
+                // Get the path element
+                const pathElement = this.pointDragState.pathElement;
+                
+                // Calculate delta from start position in screen coordinates
+                const dx = currentPoint.x - this.pointDragState.startX;
+                const dy = currentPoint.y - this.pointDragState.startY;
+                
+                // Calculate new coordinates for the point
+                const newX = this.pointDragState.originalX + dx;
+                const newY = this.pointDragState.originalY + dy;
+                
+                // Update the indicator position
+                this.pointDragState.indicator.setAttribute('cx', newX);
+                this.pointDragState.indicator.setAttribute('cy', newY);
+                
+                // Update the path data in real-time
+                this.updatePathPoint(
+                    pathElement,
+                    this.pointDragState.originalX,
+                    this.pointDragState.originalY,
+                    newX,
+                    newY
+                );
+                
+                console.log(`Dragging point to (${newX}, ${newY})`);
+            }
+            
+            // Handle end of point drag
+            handlePointDragEnd(e) {
+                if (!this.pointDragState) return;
+                
+                // Remove event listeners
+                document.removeEventListener('mousemove', this.handlePointDragMove);
+                document.removeEventListener('mouseup', this.handlePointDragEnd);
+                
+                // Update dataset to reflect new position
+                const newX = parseFloat(this.pointDragState.indicator.getAttribute('cx'));
+                const newY = parseFloat(this.pointDragState.indicator.getAttribute('cy'));
+                this.pointDragState.indicator.dataset.originalX = newX;
+                this.pointDragState.indicator.dataset.originalY = newY;
+                
+                // Clear drag state
+                this.pointDragState = null;
+                
+                // Update code view
+                this.updateCodeView();
+                
+                // Update object tree (points may have changed)
+                this.updateObjectTree();
+                
+                console.log('Point drag completed');
+            }
+            
+            // Update a specific point in a path
+            updatePathPoint(pathElement, oldX, oldY, newX, newY) {
+                if (!pathElement || !pathElement.hasAttribute('d')) return;
+                
+                // Get the path data
+                const pathData = pathElement.getAttribute('d');
+                
+                // Simple regex-based approach to find and replace the point
+                // This is a basic implementation and might not handle all cases
+                const pattern = new RegExp(`([A-Za-z])\\s*(${oldX})\\s*,?\\s*(${oldY})`, 'g');
+                const newPathData = pathData.replace(pattern, `$1 ${newX} ${newY}`);
+                
+                // Update the path data
+                pathElement.setAttribute('d', newPathData);
+                
+                // Optional: Update the UI to show the change
+                this.updatePathVisualization(pathElement);
+                
+                console.log(`Updated path point from (${oldX}, ${oldY}) to (${newX}, ${newY})`);
+            }
+            
+            // Update path visualization after edits
+            updatePathVisualization(pathElement) {
+                // For now, just ensure the selection outline is updated
+                if (this.selectedElement === pathElement) {
+                    this.addSelectionOutline(pathElement);
                 }
             }
             
@@ -2010,6 +2270,65 @@
                         indicator.parentNode.removeChild(indicator);
                     }
                 });
+            }
+            
+            // Show all points of a path with indicators
+            showAllPathPoints(pathElement) {
+                if (!pathElement || !pathElement.hasAttribute('d')) return;
+                
+                // Clear existing indicators first
+                this.clearPointIndicators();
+                
+                // Select the element
+                if (this.selectedElement !== pathElement) {
+                    this.selectElement(pathElement);
+                }
+                
+                // Get the path data
+                const pathData = pathElement.getAttribute('d');
+                
+                // Parse the path commands
+                const commands = pathData.match(/[a-zA-Z][^a-zA-Z]*/g) || [];
+                
+                // Get the cumulative transform for this path element
+                const transform = this.getCumulativeTransform(pathElement);
+                
+                // Create indicators for all points
+                commands.forEach(cmd => {
+                    const type = cmd[0].toUpperCase();
+                    if (type === 'M' || type === 'L') {
+                        const params = cmd.substring(1).trim().split(/[\s,]+/).filter(p => p.length > 0);
+                        if (params.length >= 2) {
+                            // For each point, create an indicator
+                            const x = parseFloat(params[0]);
+                            const y = parseFloat(params[1]);
+                            
+                            // Create a point indicator
+                            const indicator = document.createElementNS(this.ns, 'circle');
+                            indicator.setAttribute('cx', x);
+                            indicator.setAttribute('cy', y);
+                            indicator.setAttribute('class', 'point-indicator');
+                            
+                            // Store original coordinates and path reference for editing
+                            indicator.dataset.originalX = x;
+                            indicator.dataset.originalY = y;
+                            indicator.dataset.pathId = pathElement.id;
+                            
+                            // Apply the transform from the path
+                            if (transform) {
+                                indicator.setAttribute('transform', transform);
+                            }
+                            
+                            // Add drag functionality
+                            this.addPointDragBehavior(indicator, pathElement);
+                            
+                            // Add to UI layer
+                            this.pointHandles.appendChild(indicator);
+                        }
+                    }
+                });
+                
+                console.log(`Showing all points for path: ${pathElement.id}`);
             }
         }
 

@@ -76,6 +76,111 @@ class ChickenSVGEditor {
         // Action buttons
         this.modal.querySelector('[data-action="cancel"]').addEventListener('click', () => this.hide());
         this.modal.querySelector('[data-action="save"]').addEventListener('click', () => this.save());
+        
+        // Create view toggle buttons
+        const header = this.modal.querySelector('.svg-editor-header');
+        if (header) {
+            const viewToggle = document.createElement('div');
+            viewToggle.className = 'view-toggle';
+            viewToggle.style.margin = '0 20px';
+            viewToggle.style.display = 'inline-flex';
+            viewToggle.style.minWidth = '150px';
+            
+            const frontBtn = document.createElement('button');
+            frontBtn.className = 'view-toggle-button active';
+            frontBtn.textContent = 'Front View';
+            frontBtn.dataset.view = 'front';
+            
+            const sideBtn = document.createElement('button');
+            sideBtn.className = 'view-toggle-button';
+            sideBtn.textContent = 'Side View';
+            sideBtn.dataset.view = 'side';
+            
+            viewToggle.appendChild(frontBtn);
+            viewToggle.appendChild(sideBtn);
+            
+            // Add click handlers for view toggle
+            frontBtn.addEventListener('click', () => {
+                this.switchView('front');
+                frontBtn.classList.add('active');
+                sideBtn.classList.remove('active');
+            });
+            
+            sideBtn.addEventListener('click', () => {
+                this.switchView('side');
+                frontBtn.classList.remove('active');
+                sideBtn.classList.add('active');
+            });
+            
+            const titleElement = header.querySelector('.svg-editor-title');
+            if (titleElement) {
+                titleElement.parentNode.insertBefore(viewToggle, titleElement.nextSibling);
+            } else {
+                header.insertBefore(viewToggle, header.firstChild);
+            }
+        }
+    }
+
+    switchView(view) {
+        if (this.currentView === view) return;
+        
+        // Save current view content before switching
+        this.saveCurrentView();
+        
+        // Update current view
+        this.currentView = view;
+        
+        // Load content for the new view
+        this.getSvgContent();
+        
+        console.log(`Switched to ${view} view`);
+    }
+    
+    saveCurrentView() {
+        if (!this.isReady || !this.currentTrait || !this.currentTraits || !this.svgedit) return;
+        
+        try {
+            // Get SVG content from editor
+            if (this.svgedit && this.svgedit.svgEditor) {
+                let svgContent = this.svgedit.svgEditor.getSvgString();
+                
+                // Process SVG content
+                svgContent = this.postprocessSvgContent(svgContent);
+                
+                // Save SVG content to the appropriate trait variant for current view
+                const variantKey = this.currentTraits[this.currentTrait];
+                
+                // Save to localStorage for persistence - using variant specific key
+                const key = `trait_${this.currentTrait}_${variantKey}_${this.currentView}`;
+                localStorage.setItem(key, svgContent);
+                
+                // Update variant definitions for current view
+                switch (this.currentTrait) {
+                    case 'eyes':
+                        if (!window.chickenLab.eyeVariants[variantKey]) {
+                            window.chickenLab.eyeVariants[variantKey] = {};
+                        }
+                        window.chickenLab.eyeVariants[variantKey][this.currentView] = svgContent;
+                        break;
+                    case 'beak':
+                        if (!window.chickenLab.beakVariants[variantKey]) {
+                            window.chickenLab.beakVariants[variantKey] = {};
+                        }
+                        window.chickenLab.beakVariants[variantKey][this.currentView] = svgContent;
+                        break;
+                    case 'top':
+                        if (!window.chickenLab.topVariants[variantKey]) {
+                            window.chickenLab.topVariants[variantKey] = {};
+                        }
+                        window.chickenLab.topVariants[variantKey][this.currentView] = svgContent;
+                        break;
+                }
+                
+                console.log(`Saved ${this.currentView} view for ${this.currentTrait} variant: ${variantKey}`);
+            }
+        } catch (error) {
+            console.error('Error saving current view:', error);
+        }
     }
 
     show(trait, variantKey) {
@@ -85,13 +190,26 @@ class ChickenSVGEditor {
         this.modal.querySelector('.trait-name').textContent = `${trait} - ${variantKey}`;
         this.modal.style.display = 'flex';
         
+        // Reset view toggle buttons
+        const viewBtns = this.modal.querySelectorAll('.view-toggle-button');
+        viewBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.view === 'front');
+        });
+        
         // Get the SVG content
         this.getSvgContent();
     }
 
     hide() {
+        // Save current view before hiding
+        this.saveCurrentView();
+        
         this.modal.style.display = 'none';
         this.currentTrait = null;
+        
+        // Trigger character update
+        window.chickenLab.defineBaseComponents();
+        window.chickenLab.createChicken();
     }
 
     getSvgContent() {
@@ -211,15 +329,11 @@ class ChickenSVGEditor {
             return;
         }
         
-        try {
-            // Get SVG content from editor
-            if (this.svgedit && this.svgedit.svgEditor) {
-                let svgContent = this.svgedit.svgEditor.getSvgString();
-                this.saveSvgContent(svgContent);
-            }
-        } catch (error) {
-            console.error('Error saving SVG content:', error);
-        }
+        // Save the current view
+        this.saveCurrentView();
+        
+        // Hide the editor
+        this.hide();
     }
 
     saveSvgContent(svgContent) {
