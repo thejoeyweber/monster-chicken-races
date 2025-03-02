@@ -1,74 +1,38 @@
 // SVG Editor functionality using local SVG-edit
-class ChickenSVGEditor {
+export class ChickenSVGEditor {
     constructor() {
-        this.modal = null;
-        this.iframe = null;
-        this.svgedit = null;
-        this.currentTrait = null;
-        this.currentView = 'front';
-        this.currentTraits = null;
-        this.svgContent = null;
         this.isReady = false;
-        this.pendingSvgContent = null;
-        this.setupEditor();
+        this.currentTrait = null;
+        this.currentTraits = null;
+        this.currentView = 'front';
+        this.svgedit = null;
+        this.svgContent = null;
+        
+        // Create modal but don't show it
+        this.createModal();
     }
 
-    setupEditor() {
-        // Clone template
+    createModal() {
+        // Get template content
         const template = document.getElementById('svg-editor-template');
+        if (!template) {
+            console.error('SVG Editor template not found');
+            return;
+        }
+
+        // Clone and append to body
         this.modal = template.content.cloneNode(true).firstElementChild;
         document.body.appendChild(this.modal);
-        this.modal.style.display = 'none';
+        this.modal.style.display = 'none'; // Hide by default
 
-        // Get elements
+        // Get iframe reference
         this.iframe = this.modal.querySelector('#svg-editor-frame');
-        
-        // Load local SVG-edit
-        this.iframe.src = 'src/lib/svg-edit/index.html';
-        
-        // Wait for SVG-edit to load
-        this.iframe.addEventListener('load', () => {
-            console.log('SVG-edit iframe loaded');
-            
-            // Wait a short time to ensure all scripts are initialized
-            setTimeout(() => {
-                try {
-                    this.svgedit = this.iframe.contentWindow;
-                    
-                    // Check if the editor interface is available
-                    if (this.svgedit.svgEditor) {
-                        console.log('Found svgEditor interface directly');
-                        this.isReady = true;
-                    } else if (this.svgedit.svgedit && this.svgedit.svgedit.svgEditor) {
-                        console.log('Found svgEditor interface via svgedit namespace');
-                        this.isReady = true;
-                    } else {
-                        console.warn('SVG Editor interface not found. Available properties:', 
-                            Object.keys(this.svgedit));
-                        // Try again with a longer delay
-                        setTimeout(() => {
-                            if (this.svgedit.svgEditor || 
-                                (this.svgedit.svgedit && this.svgedit.svgedit.svgEditor)) {
-                                console.log('Found SVG Editor interface after delay');
-                                this.isReady = true;
-                                this.loadPendingContent();
-                            } else {
-                                console.error('SVG Editor interface not available after delay');
-                            }
-                        }, 1000);
-                    }
-                    
-                    // Load pending content if ready
-                    if (this.isReady) {
-                        this.loadPendingContent();
-                    }
-                } catch (e) {
-                    console.error('Error accessing iframe content:', e);
-                }
-            }, 200);
-        });
 
-        // Setup event listeners
+        // Set up event listeners
+        this.modal.querySelector('[data-action="cancel"]').addEventListener('click', () => this.hide());
+        this.modal.querySelector('[data-action="save"]').addEventListener('click', () => this.save());
+        
+        // Setup view toggle buttons
         this.setupEventListeners();
     }
 
@@ -130,7 +94,7 @@ class ChickenSVGEditor {
         // Update current view
         this.currentView = view;
         
-        // Load content for the new view
+        // Get the SVG content
         this.getSvgContent();
         
         console.log(`Switched to ${view} view`);
@@ -184,6 +148,11 @@ class ChickenSVGEditor {
     }
 
     show(trait, variantKey) {
+        // Initialize SVG-edit when showing for the first time
+        if (!this.isReady) {
+            this.initializeSVGEdit();
+        }
+
         this.currentTrait = trait;
         this.currentTraits = window.chickenLab.currentTraits;
         this.currentView = 'front'; // Default to front view
@@ -213,30 +182,20 @@ class ChickenSVGEditor {
     }
 
     getSvgContent() {
-        // Get the SVG content based on trait type
-        let variantContent;
-        const variantKey = this.currentTraits[this.currentTrait];
+        if (!this.isReady || !this.currentTrait || !this.currentTraits) return;
         
-        switch (this.currentTrait) {
-            case 'eyes':
-                variantContent = window.chickenLab.eyeVariants[variantKey][this.currentView];
-                break;
-            case 'beak':
-                variantContent = window.chickenLab.beakVariants[variantKey][this.currentView];
-                break;
-            case 'top':
-                variantContent = window.chickenLab.topVariants[variantKey][this.currentView];
-                break;
-            default:
-                console.warn('Trait type not supported yet:', this.currentTrait);
-                return;
-        }
-
-        if (!variantContent) return;
-
+        // Get the variant data
+        const variantKey = this.currentTraits[this.currentTrait];
+        const traitData = window.chickenLab.traitDefinitions[this.currentTrait];
+        const variant = traitData.variants[variantKey];
+        
+        // Get the appropriate view's SVG content
+        const svgContent = this.currentView === 'front' ? variant.frontSVG : variant.sideSVG;
+        
+        if (!svgContent) return;
+        
         // Process the content to ensure it's proper for the editor
-        // For most traits, this is a fragment with comments and paths
-        const processedContent = this.preprocessSvgContent(variantContent);
+        const processedContent = this.preprocessSvgContent(svgContent);
         
         // Load the content into SVG-edit
         this.loadSvgContent(processedContent);
@@ -337,17 +296,28 @@ class ChickenSVGEditor {
     }
 
     saveSvgContent(svgContent) {
+        if (!this.isReady || !this.currentTrait || !this.currentTraits) return;
+        
         // Process SVG content to extract what we need
         svgContent = this.postprocessSvgContent(svgContent);
         
-        // Save SVG content to the appropriate trait variant
+        // Get the variant data
         const variantKey = this.currentTraits[this.currentTrait];
+        const traitData = window.chickenLab.traitDefinitions[this.currentTrait];
+        const variant = traitData.variants[variantKey];
         
-        // Save to localStorage for persistence - using variant specific key
+        // Update the appropriate view's SVG content
+        if (this.currentView === 'front') {
+            variant.frontSVG = svgContent;
+        } else {
+            variant.sideSVG = svgContent;
+        }
+        
+        // Save to localStorage for persistence
         const key = `trait_${this.currentTrait}_${variantKey}_${this.currentView}`;
         localStorage.setItem(key, svgContent);
         
-        // Update variant definitions
+        // Update the in-memory variant data
         switch (this.currentTrait) {
             case 'eyes':
                 if (!window.chickenLab.eyeVariants[variantKey]) {
@@ -367,6 +337,12 @@ class ChickenSVGEditor {
                 }
                 window.chickenLab.topVariants[variantKey][this.currentView] = svgContent;
                 break;
+            case 'wattle':
+                if (!window.chickenLab.wattleVariants[variantKey]) {
+                    window.chickenLab.wattleVariants[variantKey] = {};
+                }
+                window.chickenLab.wattleVariants[variantKey][this.currentView] = svgContent;
+                break;
         }
         
         // Hide the editor
@@ -375,8 +351,6 @@ class ChickenSVGEditor {
         // Trigger character update
         window.chickenLab.defineBaseComponents();
         window.chickenLab.createChicken();
-        
-        console.log(`SVG content saved for ${this.currentTrait} variant: ${variantKey}`);
     }
     
     postprocessSvgContent(svgContent) {
@@ -402,13 +376,70 @@ class ChickenSVGEditor {
             this.pendingSvgContent = null;
         }
     }
+
+    initializeSVGEdit() {
+        if (!this.iframe) {
+            console.error('SVG Editor frame not found');
+            return;
+        }
+
+        // Load the SVG-edit interface
+        this.iframe.addEventListener('load', () => {
+            console.log('SVG-edit iframe loaded');
+            
+            try {
+                // Try to get the svgEditor interface
+                this.svgedit = this.iframe.contentWindow;
+                
+                if (this.svgedit) {
+                    console.log('Found svgEditor interface directly');
+                    this.isReady = true;
+                    this.loadPendingContent();
+                } else {
+                    console.error('Could not find svgEditor interface');
+                }
+            } catch (e) {
+                console.error('Error accessing SVG-edit interface:', e);
+            }
+        });
+
+        // Set the source to a simple SVG editor template for now
+        this.iframe.srcdoc = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Simple SVG Editor</title>
+                <style>
+                    body { margin: 0; padding: 20px; background: #2d2d2d; color: white; }
+                    #editor { width: 100%; height: calc(100vh - 40px); background: #1e1e1e; border: 1px solid #3d3d3d; }
+                </style>
+            </head>
+            <body>
+                <div id="editor"></div>
+                <script>
+                    window.svgEditor = {
+                        setSvgString: function(svg) {
+                            document.getElementById('editor').innerHTML = svg;
+                        },
+                        getSvgString: function() {
+                            return document.getElementById('editor').innerHTML;
+                        },
+                        clearSelection: function() {},
+                        adjustViewBox: function() {}
+                    };
+                </script>
+            </body>
+            </html>
+        `;
+    }
 }
 
 // Initialize editor and expose to window
-window.svgEditor = new ChickenSVGEditor();
+const svgEditor = new ChickenSVGEditor();
+window.svgEditor = svgEditor;
 
-// Add edit buttons to trait items
-function addEditButtonToTraitItem(item, traitName, variantName) {
+// Export function to be used by character-lab.js
+export function addEditButtonToTraitItem(item, traitName, variantName) {
     // Check if button already exists
     if (item.querySelector('.edit-trait-btn')) return;
     
@@ -423,5 +454,4 @@ function addEditButtonToTraitItem(item, traitName, variantName) {
     item.appendChild(editBtn);
 }
 
-// Export function to be used by character-lab.js
 window.addEditButtonToTraitItem = addEditButtonToTraitItem; 

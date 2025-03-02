@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chicken Character Lab</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
         :root {
             --primary-color: #457b9d;
@@ -758,8 +759,7 @@
                     </div>
                 </div>
                 <div class="svg-editor-main">
-                    <!-- SVG-edit iframe will be loaded here dynamically -->
-                    <iframe id="svg-editor-frame" src="about:blank" style="width:100%; height:100%; border:none;"></iframe>
+                    <div id="editor"></div>
                 </div>
             </div>
         </div>
@@ -821,17 +821,21 @@
     </div>
 
     <script src="src/js/animation-data.js"></script>
-    <script src="src/js/character-lab.js"></script>
+    <script type="module" src="src/js/trait-definitions.js"></script>
+    <script type="module" src="src/js/character-lab.js"></script>
+    <script type="module" src="src/js/svg-editor.js"></script>
     <script>
         // Accordion functionality
-        document.querySelectorAll('.accordion-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const content = header.nextElementSibling;
-                content.classList.toggle('active');
-                
-                // Update icon
-                const icon = header.querySelector('.accordion-icon');
-                icon.textContent = content.classList.contains('active') ? '▼' : '►';
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    content.classList.toggle('active');
+                    
+                    // Update icon
+                    const icon = header.querySelector('.accordion-icon');
+                    icon.textContent = content.classList.contains('active') ? '▼' : '►';
+                });
             });
         });
     </script>

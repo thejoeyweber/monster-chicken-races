@@ -3,6 +3,9 @@
  * A development tool for creating and testing chicken designs and animations
  */
 
+import { traitDefinitions } from './trait-definitions.js';
+import { ChickenSVGEditor, addEditButtonToTraitItem } from './svg-editor.js';
+
 class ChickenLab {
     constructor() {
         // Set initial state
@@ -11,524 +14,73 @@ class ChickenLab {
         this.isAnimating = false;
         this.currentAnimation = null;
         
-        // Define trait variations
-        this.eyeVariants = {
-            normal: {
-                front: `
-                    <!-- Left eye -->
-                    <circle cx="-8" cy="-2" r="6" fill="white"/>
-                    <circle cx="-8" cy="-2" r="4" fill="black"/>
-                    <circle cx="-9" cy="-3" r="1.5" fill="white"/>
-                    
-                    <!-- Right eye -->
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="4" fill="black"/>
-                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
-                `,
-                side: `
-                    <circle cx="8" cy="-2" r="6" fill="white"/>
-                    <circle cx="8" cy="-2" r="4" fill="black"/>
-                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
-                `
-            }
-        };
-
-        this.beakVariants = {
-            normal: {
-                front: `
-                    <!-- Upper beak -->
-                    <path d="
-                        M0,0
-                        l-5,6
-                        l10,0
-                        z"
-                        fill="#FFB74D"
-                    />
-                    <!-- Lower beak -->
-                    <path d="
-                        M-3,4
-                        l3,2
-                        l3,-2
-                        l-3,3
-                        z"
-                        fill="#FFA000"
-                    />
-                `,
-                side: `
-                    <!-- Upper beak -->
-                    <path d="
-                        M10,0
-                        l15,-2
-                        l-2,4
-                        z"
-                        fill="#FFB74D"
-                    />
-                    <!-- Lower beak -->
-                    <path d="
-                        M10,0
-                        l12,1
-                        l-9,3
-                        z"
-                        fill="#FFA000"
-                    />
-                `
-            }
-        };
-
-        this.topVariants = {
-            normal: {
-                front: `
-                    <!-- Main comb -->
-                    <path d="
-                        M0,-25
-                        C-3,-30 -6,-28 -9,-25
-                        C-6,-27 -3,-27 0,-25
-                        C3,-27 6,-27 9,-25
-                        C6,-28 3,-30 0,-25
-                        Z"
-                        fill="#FF5252"
-                    />
-                    <!-- Additional spikes -->
-                    <path d="
-                        M-6,-26
-                        C-4,-29 -2,-28 0,-26
-                        C2,-28 4,-29 6,-26
-                        Z"
-                        fill="#FF5252"
-                    />
-                `,
-                side: `
-                    <!-- Multiple poof sections -->
-                    <path d="
-                        M0,-25
-                        C3,-28 6,-26 9,-23
-                        C6,-25 3,-25 0,-23
-                        Z"
-                        fill="#FF5252"
-                    />
-                    <path d="
-                        M4,-24
-                        C7,-27 10,-25 13,-22
-                        C10,-24 7,-24 4,-22
-                        Z"
-                        fill="#FF5252"
-                    />
-                    <path d="
-                        M8,-23
-                        C11,-26 14,-24 17,-21
-                        C14,-23 11,-23 8,-21
-                        Z"
-                        fill="#FF5252"
-                    />
-                `
-            }
-        };
-
-        // Define all possible trait types and variants
-        this.traitDefinitions = {
-            // Head traits
-            eyes: {
-                name: "Eyes",
-                category: "head",
-                variants: {
-                    normal: { name: "Normal", description: "Standard chicken eyes" },
-                    angry: { name: "Angry", description: "Angled eyes with eyebrows" },
-                    cute: { name: "Cute", description: "Big adorable eyes with sparkles" },
-                    derp: { name: "Derp", description: "Crossed/silly eyes" },
-                    sleepy: { name: "Sleepy", description: "Half-closed tired eyes" },
-                    suspicious: { name: "Suspicious", description: "Narrowed, skeptical eyes" },
-                    robot: { name: "Robot", description: "Mechanical/digital eyes" },
-                    hypno: { name: "Hypno", description: "Spiral hypnotic pattern" },
-                    anime: { name: "Anime", description: "Large, expressive anime-style eyes" },
-                    pixel: { name: "Pixel", description: "8-bit retro pixel eyes" },
-                    heart: { name: "Heart", description: "Heart-shaped loving eyes" },
-                    star: { name: "Star", description: "Star-struck sparkly eyes" },
-                    money: { name: "Money", description: "Dollar signs for eyes" },
-                    rainbow: { name: "Rainbow", description: "Colorful rainbow iris" },
-                    cyclops: { name: "Cyclops", description: "Single large central eye" },
-                    alien: { name: "Alien", description: "Multiple alien eyes" },
-                    ghost: { name: "Ghost", description: "Hollow, spectral eyes" },
-                    dragon: { name: "Dragon", description: "Reptilian slitted pupils" },
-                    demon: { name: "Demon", description: "Glowing red demonic eyes" },
-                    cyborg: { name: "Cyborg", description: "One normal, one mechanical eye" },
-                    dizzy: { name: "Dizzy", description: "Spinning spiral eyes" },
-                    glitch: { name: "Glitch", description: "Glitchy, distorted eyes" },
-                    cosmic: { name: "Cosmic", description: "Galaxy swirls in eyes" },
-                    cat: { name: "Cat", description: "Feline-style eyes" },
-                    zombie: { name: "Zombie", description: "Undead, cloudy eyes" },
-                    fire: { name: "Fire", description: "Flames in the eyes" },
-                    ice: { name: "Ice", description: "Crystalline ice eyes" },
-                    void: { name: "Void", description: "Empty black holes" },
-                    ancient: { name: "Ancient", description: "Hieroglyphic symbols" }
-                }
-            },
-            top: {
-                name: "Comb",
-                category: "head",
-                variants: {
-                    normal: { name: "Normal", description: "Classic jagged comb" },
-                    mohawk: { name: "Mohawk", description: "Tall spiky mohawk" },
-                    fancy: { name: "Fancy", description: "Elegant curved comb" },
-                    punk: { name: "Punk", description: "Aggressive spiky comb" },
-                    royal: { name: "Royal", description: "Crown-like comb" },
-                    flat: { name: "Flat", description: "Low-profile smooth comb" },
-                    heart: { name: "Heart", description: "Heart-shaped comb" },
-                    horns: { name: "Horns", description: "Devil-like horns" },
-                    antlers: { name: "Antlers", description: "Majestic deer antlers" },
-                    unicorn: { name: "Unicorn", description: "Magical unicorn horn" },
-                    samurai: { name: "Samurai", description: "Traditional samurai helmet" },
-                    viking: { name: "Viking", description: "Norse warrior horns" },
-                    wizard: { name: "Wizard", description: "Mystical floating crystals" },
-                    cyber: { name: "Cyber", description: "Digital antenna array" },
-                    flame: { name: "Flame", description: "Living fire crest" },
-                    crystal: { name: "Crystal", description: "Growing crystal formation" },
-                    flower: { name: "Flower", description: "Blooming flower petals" },
-                    cloud: { name: "Cloud", description: "Floating cloud formation" },
-                    lightning: { name: "Lightning", description: "Electric discharge" },
-                    tentacles: { name: "Tentacles", description: "Writhing tentacles" },
-                    pyramid: { name: "Pyramid", description: "Ancient pyramid structure" },
-                    satellite: { name: "Satellite", description: "Space satellite dish" },
-                    brain: { name: "Brain", description: "Exposed brain matter" },
-                    coral: { name: "Coral", description: "Growing coral formation" },
-                    mushroom: { name: "Mushroom", description: "Fungal growth" },
-                    bamboo: { name: "Bamboo", description: "Bamboo shoots" },
-                    gears: { name: "Gears", description: "Mechanical gear assembly" },
-                    feathers: { name: "Feathers", description: "Exotic feather display" }
-                }
-            },
-            beak: {
-                name: "Beak",
-                category: "head",
-                variants: {
-                    normal: { name: "Normal", description: "Standard triangular beak" },
-                    sharp: { name: "Sharp", description: "Long pointed beak" },
-                    hook: { name: "Hook", description: "Curved hook-like beak" },
-                    small: { name: "Small", description: "Tiny cute beak" },
-                    wide: { name: "Wide", description: "Broad duck-like beak" },
-                    parrot: { name: "Parrot", description: "Curved parrot beak" },
-                    broken: { name: "Broken", description: "Chipped/broken beak" },
-                    buck: { name: "Buck", description: "Buck-toothed beak" },
-                    toucan: { name: "Toucan", description: "Large colorful beak" },
-                    pelican: { name: "Pelican", description: "Expandable pouch beak" },
-                    crossbill: { name: "Crossbill", description: "Crossed-over beak tips" },
-                    shovel: { name: "Shovel", description: "Flat spade-like beak" },
-                    needle: { name: "Needle", description: "Extra thin needle beak" },
-                    scissor: { name: "Scissor", description: "Scissor-like beak" },
-                    drill: { name: "Drill", description: "Spiral drill beak" },
-                    hammer: { name: "Hammer", description: "Hammer-shaped beak" },
-                    sword: { name: "Sword", description: "Sword-like beak" },
-                    cannon: { name: "Cannon", description: "Cannon barrel beak" },
-                    trumpet: { name: "Trumpet", description: "Musical instrument beak" },
-                    pencil: { name: "Pencil", description: "Writing utensil beak" },
-                    brush: { name: "Brush", description: "Paint brush tip" },
-                    crystal: { name: "Crystal", description: "Crystalline formation" },
-                    metal: { name: "Metal", description: "Chrome-plated beak" },
-                    gold: { name: "Gold", description: "Solid gold beak" },
-                    rainbow: { name: "Rainbow", description: "Color-changing beak" },
-                    pixel: { name: "Pixel", description: "8-bit style beak" },
-                    ghost: { name: "Ghost", description: "Transparent spectral beak" },
-                    lava: { name: "Lava", description: "Molten rock beak" }
-                }
-            },
-            wattle: {
-                name: "Wattle",
-                category: "head",
-                variants: {
-                    normal: { name: "Normal", description: "Standard wattle" },
-                    long: { name: "Long", description: "Extra long dangly wattle" },
-                    fancy: { name: "Fancy", description: "Decorative frilly wattle" },
-                    tiny: { name: "Tiny", description: "Minimal wattle" },
-                    heart: { name: "Heart", description: "Heart-shaped wattle" },
-                    double: { name: "Double", description: "Two-tiered wattle" },
-                    none: { name: "None", description: "No wattle" },
-                    spiked: { name: "Spiked", description: "Spiky punk wattle" },
-                    ruffled: { name: "Ruffled", description: "Multi-layered ruffles" },
-                    jeweled: { name: "Jeweled", description: "Gem-encrusted wattle" },
-                    chain: { name: "Chain", description: "Chain-link wattle" },
-                    tentacle: { name: "Tentacle", description: "Writhing tentacle" },
-                    flame: { name: "Flame", description: "Fire-like wattle" },
-                    ice: { name: "Ice", description: "Frozen crystal wattle" },
-                    leaf: { name: "Leaf", description: "Plant-like growth" },
-                    metal: { name: "Metal", description: "Mechanical plates" },
-                    bubble: { name: "Bubble", description: "Transparent bubbles" },
-                    pixel: { name: "Pixel", description: "8-bit style wattle" },
-                    neon: { name: "Neon", description: "Glowing neon tubes" },
-                    cloud: { name: "Cloud", description: "Fluffy cloud form" },
-                    crystal: { name: "Crystal", description: "Growing crystals" },
-                    coral: { name: "Coral", description: "Sea coral growth" },
-                    circuit: { name: "Circuit", description: "Electronic pathways" },
-                    origami: { name: "Origami", description: "Paper-folded design" },
-                    candy: { name: "Candy", description: "Sweet treat design" },
-                    rainbow: { name: "Rainbow", description: "Color-changing wattle" }
-                }
-            },
-            
-            // Body traits
-            bodyShape: {
-                name: "Body Shape",
-                category: "body",
-                variants: {
-                    normal: { name: "Normal", description: "Standard chicken body" },
-                    round: { name: "Round", description: "Extra plump body" },
-                    slim: { name: "Slim", description: "Slender racing body" },
-                    buff: { name: "Buff", description: "Muscular body" },
-                    fluffy: { name: "Fluffy", description: "Extra fluffy feathers" },
-                    spiky: { name: "Spiky", description: "Spiky feather pattern" },
-                    square: { name: "Square", description: "Blocky minecraft-style" },
-                    tall: { name: "Tall", description: "Extended vertical body" },
-                    tiny: { name: "Tiny", description: "Miniature body size" },
-                    giant: { name: "Giant", description: "Oversized body" },
-                    noodle: { name: "Noodle", description: "Long flexible body" },
-                    balloon: { name: "Balloon", description: "Inflated round body" },
-                    origami: { name: "Origami", description: "Paper-folded angles" },
-                    crystal: { name: "Crystal", description: "Geometric crystal form" },
-                    ghost: { name: "Ghost", description: "Transparent spectral body" },
-                    robot: { name: "Robot", description: "Mechanical body parts" },
-                    slime: { name: "Slime", description: "Gelatinous body form" },
-                    cloud: { name: "Cloud", description: "Fluffy cloud-like body" },
-                    pixel: { name: "Pixel", description: "8-bit retro style" },
-                    armored: { name: "Armored", description: "Plated armor body" },
-                    skeleton: { name: "Skeleton", description: "Exposed bone structure" },
-                    plant: { name: "Plant", description: "Living plant body" },
-                    liquid: { name: "Liquid", description: "Flowing water form" },
-                    fire: { name: "Fire", description: "Living flame body" },
-                    shadow: { name: "Shadow", description: "Dark ethereal form" }
-                }
-            },
-            wings: {
-                name: "Wings",
-                category: "body",
-                variants: {
-                    normal: { name: "Normal", description: "Standard wings" },
-                    large: { name: "Large", description: "Oversized wings" },
-                    tiny: { name: "Tiny", description: "Undersized wings" },
-                    pointed: { name: "Pointed", description: "Sharp angular wings" },
-                    fancy: { name: "Fancy", description: "Decorative feathered wings" },
-                    bat: { name: "Bat", description: "Bat-like wings" },
-                    robot: { name: "Robot", description: "Mechanical wings" },
-                    butterfly: { name: "Butterfly", description: "Colorful insect wings" },
-                    dragon: { name: "Dragon", description: "Scaled dragon wings" },
-                    angel: { name: "Angel", description: "Divine feathered wings" },
-                    demon: { name: "Demon", description: "Dark leathery wings" },
-                    crystal: { name: "Crystal", description: "Crystalline wings" },
-                    energy: { name: "Energy", description: "Glowing energy wings" },
-                    pixel: { name: "Pixel", description: "8-bit style wings" },
-                    origami: { name: "Origami", description: "Paper-folded wings" },
-                    steampunk: { name: "Steampunk", description: "Gear-driven wings" },
-                    cloud: { name: "Cloud", description: "Fluffy cloud wings" },
-                    fire: { name: "Fire", description: "Flaming wings" },
-                    ice: { name: "Ice", description: "Frozen crystal wings" },
-                    lightning: { name: "Lightning", description: "Electric wings" },
-                    rainbow: { name: "Rainbow", description: "Color-changing wings" },
-                    ghost: { name: "Ghost", description: "Spectral wings" },
-                    cyber: { name: "Cyber", description: "Digital hologram wings" },
-                    leaf: { name: "Leaf", description: "Natural leaf wings" },
-                    bone: { name: "Bone", description: "Skeletal wings" }
-                }
-            },
-            tail: {
-                name: "Tail",
-                category: "body",
-                variants: {
-                    normal: { name: "Normal", description: "Standard tail" },
-                    long: { name: "Long", description: "Long flowing tail" },
-                    fan: { name: "Fan", description: "Peacock-like fan tail" },
-                    spiky: { name: "Spiky", description: "Spiky tail feathers" },
-                    curly: { name: "Curly", description: "Curled tail feathers" },
-                    stub: { name: "Stub", description: "Short stubby tail" },
-                    forked: { name: "Forked", description: "Split/forked tail" },
-                    phoenix: { name: "Phoenix", description: "Flaming feather tail" },
-                    dragon: { name: "Dragon", description: "Long scaled tail" },
-                    robot: { name: "Robot", description: "Mechanical tail" },
-                    crystal: { name: "Crystal", description: "Crystal formation tail" },
-                    energy: { name: "Energy", description: "Glowing energy trail" },
-                    pixel: { name: "Pixel", description: "8-bit retro tail" },
-                    rainbow: { name: "Rainbow", description: "Color-changing tail" },
-                    ghost: { name: "Ghost", description: "Spectral tail" },
-                    cloud: { name: "Cloud", description: "Fluffy cloud tail" },
-                    lightning: { name: "Lightning", description: "Electric discharge" },
-                    bone: { name: "Bone", description: "Skeletal tail" },
-                    plant: { name: "Plant", description: "Living vine tail" },
-                    ice: { name: "Ice", description: "Frozen crystal tail" },
-                    metal: { name: "Metal", description: "Chrome plated tail" },
-                    tentacle: { name: "Tentacle", description: "Writhing tentacle" },
-                    spring: { name: "Spring", description: "Bouncy spring tail" },
-                    ribbon: { name: "Ribbon", description: "Flowing ribbon tail" },
-                    star: { name: "Star", description: "Star-trailing tail" }
-                }
-            },
-            
-            // Leg traits
-            legs: {
-                name: "Legs",
-                category: "legs",
-                variants: {
-                    normal: { name: "Normal", description: "Standard chicken legs" },
-                    long: { name: "Long", description: "Extra long legs" },
-                    short: { name: "Short", description: "Stubby legs" },
-                    thick: { name: "Thick", description: "Muscular legs" },
-                    scaly: { name: "Scaly", description: "Extra scaly texture" },
-                    robot: { name: "Robot", description: "Mechanical legs" },
-                    fuzzy: { name: "Fuzzy", description: "Feathered legs" },
-                    spring: { name: "Spring", description: "Bouncy spring legs" },
-                    crystal: { name: "Crystal", description: "Crystal formation legs" },
-                    tentacle: { name: "Tentacle", description: "Tentacle legs" },
-                    noodle: { name: "Noodle", description: "Wiggly noodle legs" },
-                    stilts: { name: "Stilts", description: "Extra tall stilts" },
-                    peg: { name: "Peg", description: "Wooden peg legs" },
-                    wheel: { name: "Wheel", description: "Rolling wheel legs" },
-                    hover: { name: "Hover", description: "Floating hover pads" },
-                    spider: { name: "Spider", description: "Multiple spider legs" },
-                    energy: { name: "Energy", description: "Pure energy legs" },
-                    ghost: { name: "Ghost", description: "Spectral legs" },
-                    pixel: { name: "Pixel", description: "8-bit style legs" },
-                    bone: { name: "Bone", description: "Skeletal legs" },
-                    plant: { name: "Plant", description: "Growing vine legs" },
-                    cloud: { name: "Cloud", description: "Cloud formation legs" },
-                    fire: { name: "Fire", description: "Flame trail legs" },
-                    ice: { name: "Ice", description: "Ice crystal legs" },
-                    metal: { name: "Metal", description: "Chrome plated legs" }
-                }
-            },
-            feet: {
-                name: "Feet",
-                category: "legs",
-                variants: {
-                    normal: { name: "Normal", description: "Standard chicken feet" },
-                    webbed: { name: "Webbed", description: "Duck-like webbed feet" },
-                    talons: { name: "Talons", description: "Sharp eagle-like talons" },
-                    boots: { name: "Boots", description: "Boot-like feet" },
-                    dino: { name: "Dino", description: "Dinosaur-like feet" },
-                    robot: { name: "Robot", description: "Mechanical feet" },
-                    sneakers: { name: "Sneakers", description: "Athletic shoes" },
-                    rocket: { name: "Rocket", description: "Rocket boosters" },
-                    spring: { name: "Spring", description: "Bouncy springs" },
-                    hover: { name: "Hover", description: "Hover platforms" },
-                    wheel: { name: "Wheel", description: "Rolling wheels" },
-                    crystal: { name: "Crystal", description: "Crystal formation" },
-                    energy: { name: "Energy", description: "Energy projections" },
-                    ghost: { name: "Ghost", description: "Spectral feet" },
-                    pixel: { name: "Pixel", description: "8-bit style feet" },
-                    bone: { name: "Bone", description: "Skeletal feet" },
-                    plant: { name: "Plant", description: "Root-like feet" },
-                    cloud: { name: "Cloud", description: "Cloud formations" },
-                    fire: { name: "Fire", description: "Flame trails" },
-                    ice: { name: "Ice", description: "Ice crystal feet" },
-                    metal: { name: "Metal", description: "Chrome plated feet" },
-                    tentacle: { name: "Tentacle", description: "Tentacle ends" },
-                    paw: { name: "Paw", description: "Animal-like paws" },
-                    flipper: { name: "Flipper", description: "Swimming flippers" },
-                    suction: { name: "Suction", description: "Suction cup feet" }
-                }
-            },
-            
-            // Accessories
-            headwear: {
-                name: "Headwear",
-                category: "accessories",
-                variants: {
-                    none: { name: "None", description: "No headwear" },
-                    cap: { name: "Cap", description: "Simple cap" },
-                    tophat: { name: "Top Hat", description: "Fancy top hat" },
-                    cowboy: { name: "Cowboy", description: "Western cowboy hat" },
-                    beanie: { name: "Beanie", description: "Knitted beanie" },
-                    crown: { name: "Crown", description: "Royal crown" },
-                    helmet: { name: "Helmet", description: "Safety helmet" },
-                    wizard: { name: "Wizard", description: "Magical wizard hat" },
-                    party: { name: "Party", description: "Party hat" },
-                    chef: { name: "Chef", description: "Chef's hat" },
-                    pirate: { name: "Pirate", description: "Pirate hat" },
-                    ninja: { name: "Ninja", description: "Ninja headband" },
-                    flower: { name: "Flower", description: "Flower crown" },
-                    bucket: { name: "Bucket", description: "Bucket hat" },
-                    fedora: { name: "Fedora", description: "Classic fedora" },
-                    propeller: { name: "Propeller", description: "Propeller cap" },
-                    viking: { name: "Viking", description: "Viking helmet" },
-                    astronaut: { name: "Astronaut", description: "Space helmet" },
-                    detective: { name: "Detective", description: "Detective hat" },
-                    jester: { name: "Jester", description: "Jester hat" },
-                    graduate: { name: "Graduate", description: "Graduation cap" },
-                    military: { name: "Military", description: "Military cap" },
-                    winter: { name: "Winter", description: "Winter hat" },
-                    safari: { name: "Safari", description: "Safari hat" },
-                    headphones: { name: "Headphones", description: "Gaming headset" }
-                }
-            },
-            neckwear: {
-                name: "Neckwear",
-                category: "accessories",
-                variants: {
-                    none: { name: "None", description: "No neckwear" },
-                    bowtie: { name: "Bowtie", description: "Fancy bowtie" },
-                    scarf: { name: "Scarf", description: "Cozy scarf" },
-                    tie: { name: "Tie", description: "Business tie" },
-                    necklace: { name: "Necklace", description: "Decorative necklace" },
-                    collar: { name: "Collar", description: "Pet collar" },
-                    bandana: { name: "Bandana", description: "Neck bandana" },
-                    chain: { name: "Chain", description: "Gold chain" },
-                    ribbon: { name: "Ribbon", description: "Pretty ribbon" },
-                    medal: { name: "Medal", description: "Achievement medal" },
-                    cape: { name: "Cape", description: "Hero's cape" },
-                    feather: { name: "Feather", description: "Feather boa" },
-                    lei: { name: "Lei", description: "Flower lei" },
-                    ascot: { name: "Ascot", description: "Fancy ascot" },
-                    choker: { name: "Choker", description: "Punk choker" },
-                    pearls: { name: "Pearls", description: "Pearl necklace" },
-                    pendant: { name: "Pendant", description: "Magical pendant" },
-                    bow: { name: "Bow", description: "Decorative bow" },
-                    ruff: { name: "Ruff", description: "Victorian ruff" },
-                    crystal: { name: "Crystal", description: "Crystal necklace" },
-                    spikes: { name: "Spikes", description: "Spiked collar" },
-                    amulet: { name: "Amulet", description: "Mystical amulet" },
-                    scarf2: { name: "Winter Scarf", description: "Warm winter scarf" },
-                    garland: { name: "Garland", description: "Flower garland" },
-                    neckerchief: { name: "Neckerchief", description: "Scout neckerchief" }
-                }
-            },
-            backwear: {
-                name: "Backwear",
-                category: "accessories",
-                variants: {
-                    none: { name: "None", description: "No backwear" },
-                    backpack: { name: "Backpack", description: "Small backpack" },
-                    cape: { name: "Cape", description: "Heroic cape" },
-                    saddle: { name: "Saddle", description: "Riding saddle" },
-                    jetpack: { name: "Jetpack", description: "Rocket jetpack" },
-                    wings: { name: "Wings", description: "Angel wings" },
-                    shell: { name: "Shell", description: "Turtle shell" },
-                    basket: { name: "Basket", description: "Woven basket" },
-                    umbrella: { name: "Umbrella", description: "Tiny umbrella" },
-                    guitar: { name: "Guitar", description: "Musical guitar" },
-                    rocket: { name: "Rocket", description: "Rocket pack" },
-                    surfboard: { name: "Surfboard", description: "Surfboard" },
-                    shield: { name: "Shield", description: "Battle shield" },
-                    flag: { name: "Flag", description: "Waving flag" },
-                    barrel: { name: "Barrel", description: "Wooden barrel" },
-                    propeller: { name: "Propeller", description: "Flying propeller" },
-                    book: { name: "Book", description: "Magic spellbook" },
-                    quiver: { name: "Quiver", description: "Arrow quiver" },
-                    tank: { name: "Tank", description: "Oxygen tank" },
-                    treasure: { name: "Treasure", description: "Treasure chest" },
-                    radio: { name: "Radio", description: "Boombox radio" },
-                    lantern: { name: "Lantern", description: "Glowing lantern" },
-                    antenna: { name: "Antenna", description: "Radio antenna" },
-                    portal: { name: "Portal", description: "Portal device" },
-                    satellite: { name: "Satellite", description: "Mini satellite" }
-                }
-            }
-        };
+        // Store trait definitions
+        this.traitDefinitions = traitDefinitions;
         
-        // Add trait state - initialize with defaults
-        this.currentTraits = {};
-        Object.keys(this.traitDefinitions).forEach(traitType => {
-            const variants = Object.keys(this.traitDefinitions[traitType].variants);
-            this.currentTraits[traitType] = variants[0]; // Set first variant as default
+        // Initialize trait variants from definitions
+        this.eyeVariants = {};
+        this.beakVariants = {};
+        this.topVariants = {};
+        this.wattleVariants = {};
+        
+        // Set up trait variants from definitions
+        Object.entries(this.traitDefinitions).forEach(([traitType, trait]) => {
+            Object.entries(trait.variants).forEach(([variantKey, variant]) => {
+                // Check for saved variants in localStorage
+                const frontKey = `trait_${traitType}_${variantKey}_front`;
+                const sideKey = `trait_${traitType}_${variantKey}_side`;
+                
+                const frontSVG = localStorage.getItem(frontKey) || variant.frontSVG;
+                const sideSVG = localStorage.getItem(sideKey) || variant.sideSVG;
+                
+                const variantData = {
+                    front: frontSVG,
+                    side: sideSVG
+                };
+                
+                switch(traitType) {
+                    case 'eyes':
+                        this.eyeVariants[variantKey] = variantData;
+                        break;
+                    case 'beak':
+                        this.beakVariants[variantKey] = variantData;
+                        break;
+                    case 'top':
+                        this.topVariants[variantKey] = variantData;
+                        break;
+                    case 'wattle':
+                        this.wattleVariants[variantKey] = variantData;
+                        break;
+                }
+            });
         });
         
-        console.log('Initial traits:', this.currentTraits);
+        // Define all possible trait types and variants
+        this.currentTraits = {
+            eyes: 'normal',
+            beak: 'normal',
+            top: 'normal',
+            wattle: 'normal'
+        };
+
+        // Define trait categories from trait definitions
+        this.traitCategories = {};
+        Object.entries(this.traitDefinitions).forEach(([traitType, trait]) => {
+            const category = trait.category;
+            if (!this.traitCategories[category]) {
+                this.traitCategories[category] = [];
+            }
+            this.traitCategories[category].push(traitType);
+        });
         
-        // Initialize components
+        // Initialize components first
         this.initializeComponents();
+        
+        // Then define base components and create chicken
+        this.defineBaseComponents();
+        this.createChicken();
+        
+        // Finally set up event listeners
         this.setupEventListeners();
     }
 
@@ -1252,42 +804,39 @@ class ChickenLab {
     openTraitCatalog(traitType) {
         console.log(`Opening trait catalog for: ${traitType}`);
         
-        const modal = document.createElement('div');
-        modal.className = 'trait-modal';
+        // Get trait data
+        const traitData = this.traitDefinitions[traitType];
+        const variants = traitData.variants;
         
-        const modalContent = document.createElement('div');
-        modalContent.className = 'trait-modal-content';
+        // Create or get catalog container
+        let catalog = document.getElementById('trait-catalog');
+        if (!catalog) {
+            catalog = document.createElement('div');
+            catalog.id = 'trait-catalog';
+            document.body.appendChild(catalog);
+        }
         
-        // Add header with search
+        // Clear existing content
+        catalog.innerHTML = '';
+        
+        // Add header
         const header = document.createElement('div');
-        header.className = 'trait-modal-header';
+        header.className = 'catalog-header';
+        header.innerHTML = `
+            <h2>${traitData.name} Variants</h2>
+            <button class="close-catalog">×</button>
+        `;
+        catalog.appendChild(header);
         
-        const title = document.createElement('h3');
-        title.textContent = `${this.traitDefinitions[traitType].name} Options`;
-        
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = '×';
-        closeBtn.className = 'trait-modal-close';
-        closeBtn.addEventListener('click', () => {
-            document.body.removeChild(modal);
+        // Add close button handler
+        header.querySelector('.close-catalog').addEventListener('click', () => {
+            catalog.style.display = 'none';
         });
         
-        const search = document.createElement('input');
-        search.type = 'text';
-        search.className = 'trait-search';
-        search.placeholder = `Search ${this.traitDefinitions[traitType].name.toLowerCase()}...`;
-        
-        header.appendChild(title);
-        header.appendChild(closeBtn);
-        modalContent.appendChild(header);
-        modalContent.appendChild(search);
-        
-        // Add trait grid
-        const traitGrid = document.createElement('div');
-        traitGrid.className = 'trait-modal-grid';
-        
-        const variants = this.traitDefinitions[traitType].variants;
-        const variantElements = [];
+        // Create grid container
+        const grid = document.createElement('div');
+        grid.className = 'trait-grid';
+        catalog.appendChild(grid);
         
         Object.entries(variants).forEach(([variantKey, variant]) => {
             const traitCard = document.createElement('div');
@@ -1295,11 +844,15 @@ class ChickenLab {
             if (this.currentTraits[traitType] === variantKey) {
                 traitCard.classList.add('active');
             }
+            if (!variant.live) {
+                traitCard.classList.add('not-live');
+            }
             
             traitCard.innerHTML = `
                 <div class="trait-preview">🐔</div>
                 <div class="trait-name">${variant.name}</div>
                 <div class="trait-description">${variant.description}</div>
+                ${variant.live ? '' : '<div class="trait-status">Coming Soon</div>'}
                 <button class="edit-trait-btn" title="Edit SVG">✏️</button>
             `;
             
@@ -1310,52 +863,27 @@ class ChickenLab {
                 window.svgEditor.show(traitType, variantKey);
             });
             
+            // Add click handler for all variants
             traitCard.addEventListener('click', () => {
                 // Update trait
                 this.currentTraits[traitType] = variantKey;
                 
                 // Update UI
-                document.querySelectorAll('.trait-card').forEach(card => {
+                grid.querySelectorAll('.trait-card').forEach(card => {
                     card.classList.remove('active');
                 });
                 traitCard.classList.add('active');
-                
-                // Update preview box
-                const previewBox = document.querySelector(`.trait-preview-box[data-trait-type="${traitType}"]`);
-                if (previewBox) {
-                    const previewName = previewBox.querySelector('.trait-preview-name');
-                    previewName.innerHTML = `
-                        ${this.traitDefinitions[traitType].name}: ${variant.name}
-                        <span class="trait-preview-count">(${Object.keys(variants).length} options)</span>
-                    `;
-                    previewBox.querySelector('.trait-preview-description').textContent = 
-                        variant.description;
-                }
                 
                 // Update chicken
                 this.defineBaseComponents();
                 this.createChicken();
             });
             
-            traitGrid.appendChild(traitCard);
-            variantElements.push({ element: traitCard, variant });
+            grid.appendChild(traitCard);
         });
         
-        modalContent.appendChild(traitGrid);
-        modal.appendChild(modalContent);
-        
-        // Add search functionality
-        search.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            variantElements.forEach(({ element, variant }) => {
-                const matches = 
-                    variant.name.toLowerCase().includes(searchTerm) ||
-                    variant.description.toLowerCase().includes(searchTerm);
-                element.style.display = matches ? '' : 'none';
-            });
-        });
-        
-        document.body.appendChild(modal);
+        // Show catalog
+        catalog.style.display = 'block';
     }
 
     highlightButton(id) {
@@ -1683,7 +1211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize variant data
     initializeVariantData();
     
-    // Load any saved variants from localStorage
+    // Load saved variants
     const loadSavedVariants = () => {
         const traitTypes = ['eyes', 'beak', 'top'];
         const views = ['front', 'side'];
