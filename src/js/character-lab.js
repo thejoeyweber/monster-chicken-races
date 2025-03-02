@@ -3,85 +3,72 @@
  * A development tool for creating and testing chicken designs and animations
  */
 
-import { traitDefinitions } from './trait-definitions.js';
-import { ChickenSVGEditor, addEditButtonToTraitItem } from './svg-editor.js';
+import * as characterLabAdapter from './character-lab-adapter.js';
+import * as svgUtils from './svg-utils.js';
 
 class ChickenLab {
     constructor() {
-        // Set initial state
+        // Store SVG namespace
+        this.ns = "http://www.w3.org/2000/svg";
+        
+        // Initialize current view state
         this.currentView = 'front';
         this.currentPart = 'all';
-        this.isAnimating = false;
-        this.currentAnimation = null;
-        
-        // Store trait definitions
-        this.traitDefinitions = traitDefinitions;
-        
-        // Initialize trait variants from definitions
-        this.eyeVariants = {};
-        this.beakVariants = {};
-        this.topVariants = {};
-        this.wattleVariants = {};
-        
-        // Set up trait variants from definitions
-        Object.entries(this.traitDefinitions).forEach(([traitType, trait]) => {
-            Object.entries(trait.variants).forEach(([variantKey, variant]) => {
-                // Check for saved variants in localStorage
-                const frontKey = `trait_${traitType}_${variantKey}_front`;
-                const sideKey = `trait_${traitType}_${variantKey}_side`;
-                
-                const frontSVG = localStorage.getItem(frontKey) || variant.frontSVG;
-                const sideSVG = localStorage.getItem(sideKey) || variant.sideSVG;
-                
-                const variantData = {
-                    front: frontSVG,
-                    side: sideSVG
-                };
-                
-                switch(traitType) {
-                    case 'eyes':
-                        this.eyeVariants[variantKey] = variantData;
-                        break;
-                    case 'beak':
-                        this.beakVariants[variantKey] = variantData;
-                        break;
-                    case 'top':
-                        this.topVariants[variantKey] = variantData;
-                        break;
-                    case 'wattle':
-                        this.wattleVariants[variantKey] = variantData;
-                        break;
-                }
-            });
-        });
-        
-        // Define all possible trait types and variants
+        this.currentColor = '#FF9800';  // Default color
         this.currentTraits = {
             eyes: 'normal',
             beak: 'normal',
             top: 'normal',
-            wattle: 'normal'
+            wattle: 'normal',
+            bodyShape: 'normal',
+            wings: 'normal',
+            tail: 'normal',
+            legs: 'normal',
+            feet: 'normal'
         };
-
-        // Define trait categories from trait definitions
-        this.traitCategories = {};
-        Object.entries(this.traitDefinitions).forEach(([traitType, trait]) => {
-            const category = trait.category;
-            if (!this.traitCategories[category]) {
-                this.traitCategories[category] = [];
-            }
-            this.traitCategories[category].push(traitType);
-        });
+        
+        // Initialize variant collections
+        this.eyeVariants = {};
+        this.beakVariants = {};
+        this.topVariants = {};
+        this.wattleVariants = {};
+        this.bodyShapeVariants = {};
+        this.wingsVariants = {};
+        this.tailVariants = {};
+        this.legsVariants = {};
+        this.feetVariants = {};
+        
+        // Initialize the adapter and get trait definitions
+        this.traitDefinitions = {};
+        
+        // Initialize animation state
+        this.currentAnimation = null;
         
         // Initialize components first
         this.initializeComponents();
         
-        // Then define base components and create chicken
-        this.defineBaseComponents();
-        this.createChicken();
-        
-        // Finally set up event listeners
-        this.setupEventListeners();
+        // Initialize the adapter
+        this.initializeAdapter().then(() => {
+            // Define trait categories from trait definitions
+            this.traitCategories = {};
+            Object.entries(this.traitDefinitions).forEach(([traitType, trait]) => {
+                const category = trait.category;
+                if (!this.traitCategories[category]) {
+                    this.traitCategories[category] = [];
+                }
+                this.traitCategories[category].push(traitType);
+            });
+            
+            // Initialize default variants
+            this.initializeDefaultVariants();
+            
+            // Then define base components and create chicken
+            this.defineBaseComponents();
+            this.createChicken();
+            
+            // Finally set up event listeners
+            this.setupEventListeners();
+        });
     }
 
     initializeComponents() {
@@ -127,75 +114,29 @@ class ChickenLab {
     }
 
     defineBaseComponents() {
-        console.log('Defining base components with traits:', this.currentTraits);
+        console.log("Defining base components with traits:", this.currentTraits);
         
-        // Define front view components
-        const frontBody = `
+        // Define base SVG components
+        const body = `
             <g id="chicken-body-front">
-                <!-- Main body shape -->
-                <path d="
-                    M0,-25 
-                    C-25,-25 -30,-10 -30,0
-                    C-30,20 -25,35 0,35
-                    C25,35 30,20 30,0
-                    C30,-10 25,-25 0,-25
-                    Z" 
-                    fill="inherit"
-                />
+                <!-- Body shape -->
+                ${this.bodyShapeVariants[this.currentTraits.bodyShape]?.front || '<ellipse cx="0" cy="0" rx="25" ry="30" fill="inherit"/>'}
                 
-                <!-- Left wing -->
-                <g class="wing-left">
-                    <path d="
-                        M-28,-8
-                        C-32,-4 -32,8 -28,12
-                        C-24,16 -20,16 -16,12
-                        C-20,8 -20,-4 -16,-8
-                        C-20,-12 -24,-12 -28,-8
-                        Z" 
-                        fill="inherit"
-                    />
-                    <path d="
-                        M-28,-6
-                        C-30,-2 -30,8 -28,10
-                        C-26,12 -24,12 -22,10
-                        Z" 
-                        fill="rgba(0,0,0,0.15)"
-                    />
-                </g>
+                <!-- Wings -->
+                ${this.wingsVariants[this.currentTraits.wings]?.front || ''}
+            </g>
+        `;
 
-                <!-- Right wing -->
-                <g class="wing-right">
-                    <path d="
-                        M28,-8
-                        C32,-4 32,8 28,12
-                        C24,16 20,16 16,12
-                        C20,8 20,-4 16,-8
-                        C20,-12 24,-12 28,-8
-                        Z" 
-                        fill="inherit"
-                    />
-                    <path d="
-                        M28,-6
-                        C30,-2 30,8 28,10
-                        C26,12 24,12 22,10
-                        Z" 
-                        fill="rgba(0,0,0,0.15)"
-                    />
-                </g>
-
-                <!-- Belly fluff -->
-                <path d="
-                    M-20,30
-                    Q-10,33 0,34
-                    Q10,33 20,30
-                    M-15,25
-                    Q-5,28 0,29
-                    Q5,28 15,25
-                " 
-                    fill="none" 
-                    stroke="rgba(255,255,255,0.3)" 
-                    stroke-width="2"
-                />
+        const sideBody = `
+            <g id="chicken-body-side">
+                <!-- Body shape -->
+                ${this.bodyShapeVariants[this.currentTraits.bodyShape]?.side || '<ellipse cx="0" cy="0" rx="20" ry="25" fill="inherit"/>'}
+                
+                <!-- Wings -->
+                ${this.wingsVariants[this.currentTraits.wings]?.side || ''}
+                
+                <!-- Tail -->
+                ${this.tailVariants[this.currentTraits.tail]?.side || ''}
             </g>
         `;
 
@@ -206,192 +147,52 @@ class ChickenLab {
                 
                 <!-- Eyes -->
                 <g class="eyes">
-                    ${this.eyeVariants[this.currentTraits.eyes].front}
+                    ${this.eyeVariants[this.currentTraits.eyes]?.front || '<circle cx="-8" cy="-2" r="5" fill="white"/><circle cx="8" cy="-2" r="5" fill="white"/>'}
                 </g>
 
                 <!-- Beak -->
-                ${this.beakVariants[this.currentTraits.beak].front}
+                ${this.beakVariants[this.currentTraits.beak]?.front || '<path d="M0,6 L-5,12 L5,12 Z" fill="#FF9800"/>'}
 
                 <!-- Comb -->
-                ${this.topVariants[this.currentTraits.top].front}
+                ${this.topVariants[this.currentTraits.top]?.front || ''}
 
-                <!-- Wattles -->
-                <path d="
-                    M-6,6
-                    C-10,8 -10,14 -6,18
-                    C-4,16 -4,10 -6,6
-                    Z" 
-                    fill="#FF5252"
-                />
-                <path d="
-                    M6,6
-                    C10,8 10,14 6,18
-                    C4,16 4,10 6,6
-                    Z" 
-                    fill="#FF5252"
-                />
-            </g>
-        `;
-
-        const frontLeg = `
-            <g id="chicken-leg-front">
-                <!-- Upper leg -->
-                <path d="
-                    M0,0
-                    C2,6 2,12 0,18
-                    C-2,12 -2,6 0,0
-                    Z"
-                    fill="#FFA000"
-                />
-                
-                <!-- Lower leg -->
-                <path d="
-                    M0,18
-                    C1,22 1,26 0,30
-                    M0,30
-                    L0,34
-                    M0,34
-                    L-3,38
-                    M0,34
-                    L0,38
-                    M0,34
-                    L3,38
-                    M0,32
-                    L-2,30"
-                    stroke="#FFA000"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    fill="none"
-                />
-            </g>
-        `;
-
-        // Define side view components
-        const sideBody = `
-            <g id="chicken-body-side">
-                <!-- Main body -->
-                <path d="
-                    M-30,-25
-                    C-40,-20 -40,20 -30,25
-                    C-20,30 -10,30 0,30
-                    C15,30 25,25 35,20
-                    C40,15 40,-15 35,-20
-                    C25,-25 15,-30 0,-30
-                    C-10,-30 -20,-30 -30,-25
-                    Z" 
-                    fill="inherit"
-                />
-
-                <!-- Wing -->
-                <g class="wing">
-                    <path d="
-                        M-25,-20
-                        C-33,-15 -33,15 -25,20
-                        C-20,23 -15,20 -12,15
-                        C-16,10 -16,-10 -12,-15
-                        C-15,-20 -20,-23 -25,-20
-                        Z" 
-                        fill="inherit"
-                    />
-                    <path d="
-                        M-25,-15
-                        C-28,-10 -28,10 -25,15
-                        C-23,17 -20,15 -18,12
-                        Z" 
-                        fill="rgba(0,0,0,0.15)"
-                    />
-                </g>
-
-                <!-- Tail -->
-                <g class="tail">
-                    <path d="
-                        M-35,-20
-                        C-42,-25 -48,-20 -50,-15
-                        C-48,-10 -42,-13 -35,-10
-                        C-38,-15 -38,-18 -35,-20
-                        Z" 
-                        fill="inherit"
-                    />
-                    <path d="
-                        M-38,-18
-                        C-44,-22 -46,-18 -48,-15
-                        C-46,-12 -44,-14 -38,-12
-                        Z" 
-                        fill="rgba(0,0,0,0.15)"
-                    />
-                </g>
-
-                <!-- Belly fluff -->
-                <path d="
-                    M-20,25
-                    Q0,30 20,25
-                    M-15,20
-                    Q0,25 15,20
-                " 
-                    fill="none" 
-                    stroke="rgba(255,255,255,0.3)" 
-                    stroke-width="2"
-                />
+                <!-- Wattle -->
+                ${this.wattleVariants[this.currentTraits.wattle]?.front || '<path d="M0,12 L-5,25 L5,25 Z" fill="#cc0000"/>'}
             </g>
         `;
 
         const sideHead = `
             <g id="chicken-head-side">
-                <!-- Head -->
+                <!-- Head shape -->
                 <circle cx="0" cy="0" r="20" fill="inherit"/>
                 
                 <!-- Eye -->
                 <g class="eyes">
-                    ${this.eyeVariants[this.currentTraits.eyes].side}
+                    ${this.eyeVariants[this.currentTraits.eyes]?.side || '<circle cx="8" cy="-2" r="5" fill="white"/>'}
                 </g>
 
                 <!-- Beak -->
-                ${this.beakVariants[this.currentTraits.beak].side}
+                ${this.beakVariants[this.currentTraits.beak]?.side || '<path d="M10,5 L25,5 L15,12 Z" fill="#FF9800"/>'}
 
                 <!-- Comb -->
-                ${this.topVariants[this.currentTraits.top].side}
+                ${this.topVariants[this.currentTraits.top]?.side || ''}
 
                 <!-- Wattle -->
-                <path d="
-                    M6,6
-                    C10,8 10,14 6,18
-                    C4,16 4,10 6,6
-                    Z" 
-                    fill="#FF5252"
-                />
+                ${this.wattleVariants[this.currentTraits.wattle]?.side || '<path d="M0,12 L-5,25 L0,25 Z" fill="#cc0000"/>'}
+            </g>
+        `;
+
+        const frontLeg = `
+            <g id="chicken-leg-front">
+                ${this.legsVariants[this.currentTraits.legs]?.front || ''}
+                ${this.feetVariants[this.currentTraits.feet]?.front || ''}
             </g>
         `;
 
         const sideLeg = `
             <g id="chicken-leg-side">
-                <!-- Upper leg -->
-                <path d="
-                    M0,0
-                    C2,6 2,12 0,18
-                    C-2,12 -2,6 0,0
-                    Z"
-                    fill="#FFA000"
-                />
-                
-                <!-- Lower leg -->
-                <path d="
-                    M0,18
-                    C1,22 1,26 0,30
-                    M0,30
-                    L0,34
-                    M0,34
-                    L-3,38
-                    M0,34
-                    L0,38
-                    M0,34
-                    L3,38
-                    M0,32
-                    L-2,30"
-                    stroke="#FFA000"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    fill="none"
-                />
+                ${this.legsVariants[this.currentTraits.legs]?.side || ''}
+                ${this.feetVariants[this.currentTraits.feet]?.side || ''}
             </g>
         `;
 
@@ -422,11 +223,11 @@ class ChickenLab {
 
         // Add all components to defs
         this.defs.innerHTML = `
-            ${frontBody}
-            ${frontHead}
-            ${frontLeg}
+            ${body}
             ${sideBody}
+            ${frontHead}
             ${sideHead}
+            ${frontLeg}
             ${sideLeg}
             ${frontOutline}
             ${sideOutline}
@@ -640,11 +441,25 @@ class ChickenLab {
         console.log('Event listeners set up');
     }
     
-    setupTraitUI() {
+    async setupTraitUI() {
         console.log('Setting up trait UI');
         
         const traitAccordions = document.getElementById('trait-accordions');
         if (!traitAccordions) return;
+        
+        // Make sure we have the latest trait definitions
+        if (Object.keys(this.traitDefinitions).length === 0) {
+            try {
+                await characterLabAdapter.initialize();
+                this.traitDefinitions = characterLabAdapter.getTraitDefinitions();
+            } catch (error) {
+                console.error('Error loading trait definitions:', error);
+                return; // Can't set up UI without trait definitions
+            }
+        }
+        
+        // Clear existing content
+        traitAccordions.innerHTML = '';
         
         // Group traits by category
         const traitsByCategory = {};
@@ -715,33 +530,39 @@ class ChickenLab {
                         variantBox.classList.add('active');
                     }
                     
+                    // Check if SVG files exist for this variant (using inline property for now)
+                    // TODO: When all SVGs are migrated to the file system structure, replace this with:
+                    // const hasSVG = await svgUtils.doesSvgExist(trait.type, key, 'front') || 
+                    //                await svgUtils.doesSvgExist(trait.type, key, 'side');
+                    const hasSVG = variant.frontSVG || variant.sideSVG;
+                    if (!hasSVG) {
+                        variantBox.classList.add('not-live');
+                    }
+                    
                     variantBox.innerHTML = `
                         <div class="variant-preview">🐔</div>
                         <div class="variant-name">${variant.name}</div>
-                        <button class="edit-trait-btn" title="Edit SVG">✏️</button>
+                        ${hasSVG ? '' : '<div class="variant-status">No SVG Yet</div>'}
+                        ${variant.live ? '<div class="trait-badge">Live</div>' : ''}
                     `;
                     
-                    // Add edit button handler
-                    const editBtn = variantBox.querySelector('.edit-trait-btn');
-                    editBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        window.svgEditor.show(trait.type, key);
-                    });
-                    
-                    variantBox.addEventListener('click', () => {
-                        // Update trait
-                        this.currentTraits[trait.type] = key;
-                        
-                        // Update UI
-                        variantGrid.querySelectorAll('.variant-box').forEach(box => {
-                            box.classList.remove('active');
+                    // Only add click handler if SVG exists
+                    if (hasSVG) {
+                        variantBox.addEventListener('click', () => {
+                            // Update trait
+                            this.currentTraits[trait.type] = key;
+                            
+                            // Update UI
+                            variantGrid.querySelectorAll('.variant-box').forEach(box => {
+                                box.classList.remove('active');
+                            });
+                            variantBox.classList.add('active');
+                            
+                            // Update components and recreate chicken
+                            this.defineBaseComponents();
+                            this.createChicken();
                         });
-                        variantBox.classList.add('active');
-                        
-                        // Update chicken
-                        this.defineBaseComponents();
-                        this.createChicken();
-                    });
+                    }
                     
                     variantGrid.appendChild(variantBox);
                 });
@@ -802,9 +623,14 @@ class ChickenLab {
     }
     
     openTraitCatalog(traitType) {
-        console.log(`Opening trait catalog for: ${traitType}`);
+        console.log(`Opening catalog for ${traitType}`);
         
-        // Get trait data
+        // Get the trait data
+        if (!this.traitDefinitions[traitType]) {
+            console.error(`Trait type ${traitType} not found`);
+            return;
+        }
+        
         const traitData = this.traitDefinitions[traitType];
         const variants = traitData.variants;
         
@@ -819,6 +645,11 @@ class ChickenLab {
         // Clear existing content
         catalog.innerHTML = '';
         
+        // Create modal structure
+        const modalContent = document.createElement('div');
+        modalContent.className = 'catalog-content';
+        catalog.appendChild(modalContent);
+        
         // Add header
         const header = document.createElement('div');
         header.className = 'catalog-header';
@@ -826,25 +657,48 @@ class ChickenLab {
             <h2>${traitData.name} Variants</h2>
             <button class="close-catalog">×</button>
         `;
-        catalog.appendChild(header);
+        modalContent.appendChild(header);
         
         // Add close button handler
         header.querySelector('.close-catalog').addEventListener('click', () => {
             catalog.style.display = 'none';
         });
         
+        // Add backdrop click handler to close modal
+        catalog.addEventListener('click', (e) => {
+            if (e.target === catalog) {
+                catalog.style.display = 'none';
+            }
+        });
+        
         // Create grid container
         const grid = document.createElement('div');
         grid.className = 'trait-grid';
-        catalog.appendChild(grid);
+        modalContent.appendChild(grid);
         
-        Object.entries(variants).forEach(([variantKey, variant]) => {
+        // Sort variants to put "normal" first, then sort the rest alphabetically
+        const sortedVariants = Object.entries(variants).sort((a, b) => {
+            // If one of the keys is 'normal', it should go first
+            if (a[0] === 'normal') return -1;
+            if (b[0] === 'normal') return 1;
+            
+            // Otherwise sort alphabetically by name
+            return a[1].name.localeCompare(b[1].name);
+        });
+
+        sortedVariants.forEach(([variantKey, variant]) => {
             const traitCard = document.createElement('div');
             traitCard.className = 'trait-card';
             if (this.currentTraits[traitType] === variantKey) {
                 traitCard.classList.add('active');
             }
-            if (!variant.live) {
+            
+            // Check if SVG files exist for this variant (using inline property for now)
+            // TODO: When all SVGs are migrated to the file system structure, replace this with:
+            // const hasSVG = await svgUtils.doesSvgExist(trait.type, key, 'front') || 
+            //                await svgUtils.doesSvgExist(trait.type, key, 'side');
+            const hasSVG = variant.frontSVG || variant.sideSVG;
+            if (!hasSVG) {
                 traitCard.classList.add('not-live');
             }
             
@@ -852,32 +706,32 @@ class ChickenLab {
                 <div class="trait-preview">🐔</div>
                 <div class="trait-name">${variant.name}</div>
                 <div class="trait-description">${variant.description}</div>
-                ${variant.live ? '' : '<div class="trait-status">Coming Soon</div>'}
-                <button class="edit-trait-btn" title="Edit SVG">✏️</button>
+                ${hasSVG ? '' : '<div class="trait-status">No SVG Yet</div>'}
+                ${variant.live ? '<div class="trait-badge">Live</div>' : ''}
             `;
             
-            // Add edit button handler
-            const editBtn = traitCard.querySelector('.edit-trait-btn');
-            editBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                window.svgEditor.show(traitType, variantKey);
-            });
-            
-            // Add click handler for all variants
-            traitCard.addEventListener('click', () => {
-                // Update trait
-                this.currentTraits[traitType] = variantKey;
-                
-                // Update UI
-                grid.querySelectorAll('.trait-card').forEach(card => {
-                    card.classList.remove('active');
+            // Only add click handler if SVG exists
+            if (hasSVG) {
+                traitCard.addEventListener('click', () => {
+                    // Update trait
+                    this.currentTraits[traitType] = variantKey;
+                    
+                    // Update UI
+                    grid.querySelectorAll('.trait-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    traitCard.classList.add('active');
+                    
+                    // Update chicken
+                    this.defineBaseComponents();
+                    this.createChicken();
+                    
+                    // Close the modal after selection
+                    setTimeout(() => {
+                        catalog.style.display = 'none';
+                    }, 300);
                 });
-                traitCard.classList.add('active');
-                
-                // Update chicken
-                this.defineBaseComponents();
-                this.createChicken();
-            });
+            }
             
             grid.appendChild(traitCard);
         });
@@ -1123,11 +977,423 @@ class ChickenLab {
         this.svgContent.innerHTML = variantContent;
         this.updateCodeEditor();
     }
+
+    // Initialize the character lab adapter
+    async initializeAdapter() {
+        try {
+            await characterLabAdapter.initialize();
+            // Update trait definitions
+            this.traitDefinitions = characterLabAdapter.getTraitDefinitions();
+            console.log('Character Lab Adapter initialized successfully');
+            
+            // Re-initialize trait UI if it was already set up
+            if (document.getElementById('trait-accordions')) {
+                await this.setupTraitUI();
+            }
+            return true;
+        } catch (error) {
+            console.error('Error initializing Character Lab Adapter:', error);
+            return false;
+        }
+    }
+
+    // Add a new method to initialize default variants
+    initializeDefaultVariants() {
+        // Default eye variants
+        if (!this.eyeVariants.normal) {
+            this.eyeVariants.normal = {
+                front: `
+                    <!-- Left eye -->
+                    <circle cx="-8" cy="-2" r="6" fill="white"/>
+                    <circle cx="-8" cy="-2" r="4" fill="black"/>
+                    <circle cx="-9" cy="-3" r="1.5" fill="white"/>
+                    
+                    <!-- Right eye -->
+                    <circle cx="8" cy="-2" r="6" fill="white"/>
+                    <circle cx="8" cy="-2" r="4" fill="black"/>
+                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
+                `,
+                side: `
+                    <circle cx="8" cy="-2" r="6" fill="white"/>
+                    <circle cx="8" cy="-2" r="4" fill="black"/>
+                    <circle cx="7" cy="-3" r="1.5" fill="white"/>
+                `
+            };
+        }
+        
+        // Default beak variants
+        if (!this.beakVariants.normal) {
+            this.beakVariants.normal = {
+                front: `
+                    <!-- Upper beak -->
+                    <path d="
+                      M0,0
+                      l-5,6
+                      l10,0
+                      z"
+                      fill="#FFB74D"
+                    />
+                    <!-- Lower beak -->
+                    <path d="
+                      M-3,4
+                      l3,2
+                      l3,-2
+                      l-3,3
+                      z"
+                      fill="#FFA000"
+                    />
+                `,
+                side: `
+                    <!-- Upper beak -->
+                    <path d="
+                      M10,0
+                      l15,-2
+                      l-2,4
+                      z"
+                      fill="#FFB74D"
+                    />
+                    <!-- Lower beak -->
+                    <path d="
+                      M10,0
+                      l12,1
+                      l-9,3
+                      z"
+                      fill="#FFA000"
+                    />
+                `
+            };
+        }
+        
+        // Default top variants
+        if (!this.topVariants.normal) {
+            this.topVariants.normal = {
+                front: `
+                    <!-- Main comb -->
+                    <path d="
+                      M0,-25
+                      C-3,-30 -6,-28 -9,-25
+                      C-6,-27 -3,-27 0,-25
+                      C3,-27 6,-27 9,-25
+                      C6,-28 3,-30 0,-25
+                      Z"
+                      fill="#FF5252"
+                    />
+                    <!-- Additional spikes -->
+                    <path d="
+                      M-6,-26
+                      C-4,-29 -2,-28 0,-26
+                      C2,-28 4,-29 6,-26
+                      Z"
+                      fill="#FF5252"
+                    />
+                `,
+                side: `
+                    <!-- Main comb -->
+                    <path d="
+                      M0,-25
+                      C-3,-30 -6,-28 -9,-25
+                      C-6,-27 -3,-27 0,-25
+                      C3,-27 6,-27 9,-25
+                      C6,-28 3,-30 0,-25
+                      Z"
+                      fill="#FF5252"
+                    />
+                    <!-- Additional spikes -->
+                    <path d="
+                      M-6,-26
+                      C-4,-29 -2,-28 0,-26
+                      C2,-28 4,-29 6,-26
+                      Z"
+                      fill="#FF5252"
+                    />
+                `
+            };
+        }
+
+        // Default wattle variants
+        if (!this.wattleVariants?.normal) {
+            this.wattleVariants = this.wattleVariants || {};
+            this.wattleVariants.normal = {
+                front: `
+                    <path d="
+                      M-6,6
+                      C-10,8 -10,14 -6,18
+                      C-4,16 -4,10 -6,6
+                      Z" 
+                      fill="#FF5252"
+                    />
+                    <path d="
+                      M6,6
+                      C10,8 10,14 6,18
+                      C4,16 4,10 6,6
+                      Z" 
+                      fill="#FF5252"
+                    />
+                `,
+                side: `
+                    <path d="
+                      M6,6
+                      C10,8 10,14 6,18
+                      C4,16 4,10 6,6
+                      Z" 
+                      fill="#FF5252"
+                    />
+                `
+            };
+        }
+
+        // Default body shape variants
+        if (!this.bodyShapeVariants?.normal) {
+            this.bodyShapeVariants = this.bodyShapeVariants || {};
+            this.bodyShapeVariants.normal = {
+                front: `
+                    <!-- Main body shape -->
+                    <path d="
+                      M0,-25 
+                      C-25,-25 -30,-10 -30,0
+                      C-30,20 -25,35 0,35
+                      C25,35 30,20 30,0
+                      C30,-10 25,-25 0,-25
+                      Z" 
+                      fill="inherit"
+                    />
+                `,
+                side: `
+                    <!-- Main body -->
+                    <path d="
+                      M-30,-25
+                      C-40,-20 -40,20 -30,25
+                      C-20,30 -10,30 0,30
+                      C15,30 25,25 35,20
+                      C40,15 40,-15 35,-20
+                      C25,-25 15,-30 0,-30
+                      C-10,-30 -20,-30 -30,-25
+                      Z" 
+                      fill="inherit"
+                    />
+                `
+            };
+        }
+
+        // Default wings variants
+        if (!this.wingsVariants?.normal) {
+            this.wingsVariants = this.wingsVariants || {};
+            this.wingsVariants.normal = {
+                front: `
+                    <!-- Left wing -->
+                    <g class="wing-left">
+                      <path d="
+                        M-28,-8
+                        C-32,-4 -32,8 -28,12
+                        C-24,16 -20,16 -16,12
+                        C-20,8 -20,-4 -16,-8
+                        C-20,-12 -24,-12 -28,-8
+                        Z" 
+                        fill="inherit"
+                      />
+                      <path d="
+                        M-28,-6
+                        C-30,-2 -30,8 -28,10
+                        C-26,12 -24,12 -22,10
+                        Z" 
+                        fill="rgba(0,0,0,0.15)"
+                      />
+                    </g>
+
+                    <!-- Right wing -->
+                    <g class="wing-right">
+                      <path d="
+                        M28,-8
+                        C32,-4 32,8 28,12
+                        C24,16 20,16 16,12
+                        C20,8 20,-4 16,-8
+                        C20,-12 24,-12 28,-8
+                        Z" 
+                        fill="inherit"
+                      />
+                      <path d="
+                        M28,-6
+                        C30,-2 30,8 28,10
+                        C26,12 24,12 22,10
+                        Z" 
+                        fill="rgba(0,0,0,0.15)"
+                      />
+                    </g>
+                `,
+                side: `
+                    <!-- Wing -->
+                    <g class="wing">
+                      <path d="
+                        M-25,-20
+                        C-33,-15 -33,15 -25,20
+                        C-20,23 -15,20 -12,15
+                        C-16,10 -16,-10 -12,-15
+                        C-15,-20 -20,-23 -25,-20
+                        Z" 
+                        fill="inherit"
+                      />
+                      <path d="
+                        M-25,-15
+                        C-28,-10 -28,10 -25,15
+                        C-23,17 -20,15 -18,12
+                        Z" 
+                        fill="rgba(0,0,0,0.15)"
+                      />
+                    </g>
+                `
+            };
+        }
+
+        // Default tail variants
+        if (!this.tailVariants?.normal) {
+            this.tailVariants = this.tailVariants || {};
+            this.tailVariants.normal = {
+                front: `
+                    <!-- No front view for tail -->
+                `,
+                side: `
+                    <g class="tail">
+                      <path d="
+                        M-35,-20
+                        C-42,-25 -48,-20 -50,-15
+                        C-48,-10 -42,-13 -35,-10
+                        C-38,-15 -38,-18 -35,-20
+                        Z" 
+                        fill="inherit"
+                      />
+                      <path d="
+                        M-38,-18
+                        C-44,-22 -46,-18 -48,-15
+                        C-46,-12 -44,-14 -38,-12
+                        Z" 
+                        fill="rgba(0,0,0,0.15)"
+                      />
+                    </g>
+                `
+            };
+        }
+
+        // Default legs variants
+        if (!this.legsVariants?.normal) {
+            this.legsVariants = this.legsVariants || {};
+            this.legsVariants.normal = {
+                front: `
+                    <!-- Upper leg -->
+                    <path d="
+                      M0,0
+                      C2,6 2,12 0,18
+                      C-2,12 -2,6 0,0
+                      Z"
+                      fill="#FFA000"
+                    />
+                    
+                    <!-- Lower leg -->
+                    <path d="
+                      M0,18
+                      C1,22 1,26 0,30
+                      M0,30
+                      L0,34
+                      M0,34
+                      L-3,38
+                      M0,34
+                      L0,38
+                      M0,34
+                      L3,38
+                      M0,32
+                      L-2,30"
+                      stroke="#FFA000"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      fill="none"
+                    />
+                `,
+                side: `
+                    <!-- Upper leg -->
+                    <path d="
+                      M0,0
+                      C2,6 2,12 0,18
+                      C-2,12 -2,6 0,0
+                      Z"
+                      fill="#FFA000"
+                    />
+                    
+                    <!-- Lower leg -->
+                    <path d="
+                      M0,18
+                      C1,22 1,26 0,30
+                      M0,30
+                      L0,34
+                      M0,34
+                      L-3,38
+                      M0,34
+                      L0,38
+                      M0,34
+                      L3,38
+                      M0,32
+                      L-2,30"
+                      stroke="#FFA000"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      fill="none"
+                    />
+                `
+            };
+        }
+
+        // Default feet variants
+        if (!this.feetVariants?.normal) {
+            this.feetVariants = this.feetVariants || {};
+            this.feetVariants.normal = {
+                front: `
+                    <path d="
+                      M0,34
+                      L-3,38
+                      M0,34
+                      L0,38
+                      M0,34
+                      L3,38"
+                      stroke="#FFA000"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      fill="none"
+                    />
+                `,
+                side: `
+                    <path d="
+                      M0,34
+                      L-3,38
+                      M0,34
+                      L0,38
+                      M0,34
+                      L3,38"
+                      stroke="#FFA000"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      fill="none"
+                    />
+                `
+            };
+        }
+        
+        console.log("Default variants initialized");
+    }
 }
 
 // Initialize the lab when the page loads
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     window.chickenLab = new ChickenLab();
+    
+    // Wait for initialization to complete before proceeding
+    await new Promise(resolve => {
+        const checkInit = () => {
+            if (Object.keys(window.chickenLab.traitDefinitions).length > 0) {
+                resolve();
+            } else {
+                setTimeout(checkInit, 100);
+            }
+        };
+        checkInit();
+    });
     
     // Initialize each variant to have its own copy of SVG data
     const initializeVariantData = () => {
@@ -1137,11 +1403,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Clone the default data for each variant
-        const traitTypes = ['eyes', 'beak', 'top'];
+        const traitTypes = ['eyes', 'beak', 'top', 'wattle', 'bodyShape', 'wings', 'tail', 'legs', 'feet'];
         const views = ['front', 'side'];
         
         for (const traitType of traitTypes) {
-            const variants = window.chickenLab.traitDefinitions[traitType].variants;
+            const variants = window.chickenLab.traitDefinitions[traitType]?.variants || {};
             // Get the default variant's data
             const defaultVariantKey = Object.keys(variants)[0];
             const defaultVariantData = {};
@@ -1157,6 +1423,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         break;
                     case 'top':
                         defaultVariantData[view] = window.chickenLab.topVariants.normal[view];
+                        break;
+                    case 'wattle':
+                        defaultVariantData[view] = window.chickenLab.wattleVariants.normal[view];
+                        break;
+                    case 'bodyShape':
+                        defaultVariantData[view] = window.chickenLab.bodyShapeVariants.normal[view];
+                        break;
+                    case 'wings':
+                        defaultVariantData[view] = window.chickenLab.wingsVariants.normal[view];
+                        break;
+                    case 'tail':
+                        defaultVariantData[view] = window.chickenLab.tailVariants.normal[view];
+                        break;
+                    case 'legs':
+                        defaultVariantData[view] = window.chickenLab.legsVariants.normal[view];
+                        break;
+                    case 'feet':
+                        defaultVariantData[view] = window.chickenLab.feetVariants.normal[view];
                         break;
                 }
             }
@@ -1194,6 +1478,42 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                                 window.chickenLab.topVariants[variantKey][view] = variantData;
                                 break;
+                            case 'wattle':
+                                if (!window.chickenLab.wattleVariants[variantKey]) {
+                                    window.chickenLab.wattleVariants[variantKey] = {};
+                                }
+                                window.chickenLab.wattleVariants[variantKey][view] = variantData;
+                                break;
+                            case 'bodyShape':
+                                if (!window.chickenLab.bodyShapeVariants[variantKey]) {
+                                    window.chickenLab.bodyShapeVariants[variantKey] = {};
+                                }
+                                window.chickenLab.bodyShapeVariants[variantKey][view] = variantData;
+                                break;
+                            case 'wings':
+                                if (!window.chickenLab.wingsVariants[variantKey]) {
+                                    window.chickenLab.wingsVariants[variantKey] = {};
+                                }
+                                window.chickenLab.wingsVariants[variantKey][view] = variantData;
+                                break;
+                            case 'tail':
+                                if (!window.chickenLab.tailVariants[variantKey]) {
+                                    window.chickenLab.tailVariants[variantKey] = {};
+                                }
+                                window.chickenLab.tailVariants[variantKey][view] = variantData;
+                                break;
+                            case 'legs':
+                                if (!window.chickenLab.legsVariants[variantKey]) {
+                                    window.chickenLab.legsVariants[variantKey] = {};
+                                }
+                                window.chickenLab.legsVariants[variantKey][view] = variantData;
+                                break;
+                            case 'feet':
+                                if (!window.chickenLab.feetVariants[variantKey]) {
+                                    window.chickenLab.feetVariants[variantKey] = {};
+                                }
+                                window.chickenLab.feetVariants[variantKey][view] = variantData;
+                                break;
                         }
                     }
                 }
@@ -1213,11 +1533,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load saved variants
     const loadSavedVariants = () => {
-        const traitTypes = ['eyes', 'beak', 'top'];
+        const traitTypes = ['eyes', 'beak', 'top', 'wattle', 'bodyShape', 'wings', 'tail', 'legs', 'feet'];
         const views = ['front', 'side'];
         
         for (const traitType of traitTypes) {
-            const variants = window.chickenLab.traitDefinitions[traitType].variants;
+            const variants = window.chickenLab.traitDefinitions[traitType]?.variants || {};
             
             for (const variantKey of Object.keys(variants)) {
                 for (const view of views) {
@@ -1245,6 +1565,42 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                                 window.chickenLab.topVariants[variantKey][view] = savedData;
                                 break;
+                            case 'wattle':
+                                if (!window.chickenLab.wattleVariants[variantKey]) {
+                                    window.chickenLab.wattleVariants[variantKey] = {};
+                                }
+                                window.chickenLab.wattleVariants[variantKey][view] = savedData;
+                                break;
+                            case 'bodyShape':
+                                if (!window.chickenLab.bodyShapeVariants[variantKey]) {
+                                    window.chickenLab.bodyShapeVariants[variantKey] = {};
+                                }
+                                window.chickenLab.bodyShapeVariants[variantKey][view] = savedData;
+                                break;
+                            case 'wings':
+                                if (!window.chickenLab.wingsVariants[variantKey]) {
+                                    window.chickenLab.wingsVariants[variantKey] = {};
+                                }
+                                window.chickenLab.wingsVariants[variantKey][view] = savedData;
+                                break;
+                            case 'tail':
+                                if (!window.chickenLab.tailVariants[variantKey]) {
+                                    window.chickenLab.tailVariants[variantKey] = {};
+                                }
+                                window.chickenLab.tailVariants[variantKey][view] = savedData;
+                                break;
+                            case 'legs':
+                                if (!window.chickenLab.legsVariants[variantKey]) {
+                                    window.chickenLab.legsVariants[variantKey] = {};
+                                }
+                                window.chickenLab.legsVariants[variantKey][view] = savedData;
+                                break;
+                            case 'feet':
+                                if (!window.chickenLab.feetVariants[variantKey]) {
+                                    window.chickenLab.feetVariants[variantKey] = {};
+                                }
+                                window.chickenLab.feetVariants[variantKey][view] = savedData;
+                                break;
                         }
                     }
                 }
@@ -1258,99 +1614,4 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load saved variants
     loadSavedVariants();
-}); 
-
-// SVG Editor Integration
-document.addEventListener('DOMContentLoaded', () => {
-    // Load the SVG Editor script
-    const loadSvgEditor = () => {
-        return new Promise((resolve, reject) => {
-            if (document.getElementById('svg-editor-script')) {
-                resolve();
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.id = 'svg-editor-script';
-            script.src = 'src/js/svg-editor.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-    };
-
-    // Load the script and then set up the UI integration
-    loadSvgEditor()
-        .then(() => {
-            console.log('SVG Editor loaded successfully');
-            
-            // Only add edit buttons to eye, beak, and top traits for now
-            const editableTraitTypes = ['eyes', 'beak', 'top'];
-            
-            // Add buttons to trait items in accordions
-            const addEditButtonsToExistingItems = () => {
-                // Add edit buttons to variant boxes in the trait sections
-                document.querySelectorAll('.variant-box').forEach(item => {
-                    const traitSection = item.closest('.trait-group');
-                    if (!traitSection) return;
-                    
-                    const traitTitle = traitSection.querySelector('.trait-title');
-                    if (!traitTitle) return;
-                    
-                    const traitName = traitTitle.textContent.toLowerCase();
-                    
-                    // Check if it's an editable trait type
-                    if (editableTraitTypes.some(type => traitName.includes(type))) {
-                        const variantName = item.querySelector('.variant-name').textContent;
-                        // Get the trait type from the trait definitions
-                        const traitType = editableTraitTypes.find(type => traitName.includes(type));
-                        if (traitType && window.addEditButtonToTraitItem) {
-                            window.addEditButtonToTraitItem(item, traitType, variantName);
-                        }
-                    }
-                });
-                
-                // Add edit buttons to trait cards in catalogs
-                document.querySelectorAll('.trait-card').forEach(item => {
-                    const modal = item.closest('.trait-modal');
-                    if (!modal) return;
-                    
-                    const modalTitle = modal.querySelector('h3');
-                    if (!modalTitle) return;
-                    
-                    const titleText = modalTitle.textContent.toLowerCase();
-                    
-                    // Check if it's an editable trait type
-                    if (editableTraitTypes.some(type => titleText.includes(type))) {
-                        const variantName = item.querySelector('.trait-name').textContent;
-                        // Get the trait type from the trait definitions
-                        const traitType = editableTraitTypes.find(type => titleText.includes(type));
-                        if (traitType && window.addEditButtonToTraitItem) {
-                            window.addEditButtonToTraitItem(item, traitType, variantName);
-                        }
-                    }
-                });
-            };
-            
-            // Initial button addition
-            addEditButtonsToExistingItems();
-            
-            // Override the trait UI setup to add edit buttons to new items
-            const originalSetupTraitUI = window.chickenLab.setupTraitUI;
-            window.chickenLab.setupTraitUI = function() {
-                originalSetupTraitUI.apply(this, arguments);
-                addEditButtonsToExistingItems();
-            };
-            
-            // Override the trait catalog open function to add edit buttons
-            const originalOpenTraitCatalog = window.chickenLab.openTraitCatalog;
-            window.chickenLab.openTraitCatalog = function() {
-                originalOpenTraitCatalog.apply(this, arguments);
-                // Wait a bit for the DOM to update
-                setTimeout(addEditButtonsToExistingItems, 100);
-            };
-        })
-        .catch(error => {
-            console.error('Failed to load SVG Editor:', error);
-        });
 }); 

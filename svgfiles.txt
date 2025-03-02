@@ -1,0 +1,351 @@
+﻿
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                backwear                                                 
+d-----          3/2/2025   2:25 PM                beak                                                     
+d-----          3/2/2025   2:34 PM                bodyShape                                                
+d-----          3/2/2025   2:25 PM                eyes                                                     
+d-----          3/2/2025   2:34 PM                feet                                                     
+d-----          3/2/2025   2:34 PM                headwear                                                 
+d-----          3/2/2025   2:34 PM                legs                                                     
+d-----          3/2/2025   2:34 PM                neckwear                                                 
+d-----          3/2/2025   2:34 PM                tail                                                     
+d-----          3/2/2025   2:25 PM                top                                                      
+d-----          3/2/2025   2:34 PM                wattle                                                   
+d-----          3/2/2025   2:34 PM                wings                                                    
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\backwear
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\backwear\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            567 backpack.svg                                             
+-a----          3/2/2025   2:34 PM            229 none.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\backwear\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            704 backpack.svg                                             
+-a----          3/2/2025   2:34 PM            210 none.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\beak
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\beak\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            513 normal.svg                                               
+-a----          3/2/2025   2:34 PM            512 sharp.svg                                                
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\beak\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            498 normal.svg                                               
+-a----          3/2/2025   2:34 PM            499 sharp.svg                                                
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\bodyShape
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\bodyShape\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            440 normal.svg                                               
+-a----          3/2/2025   2:34 PM            405 round.svg                                                
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\bodyShape\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            506 normal.svg                                               
+-a----          3/2/2025   2:34 PM            477 round.svg                                                
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\eyes
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\eyes\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            605 angry.svg                                                
+-a----          3/2/2025   2:34 PM            742 cute.svg                                                 
+-a----          3/2/2025   2:34 PM            578 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\eyes\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            356 angry.svg                                                
+-a----          3/2/2025   2:34 PM            423 cute.svg                                                 
+-a----          3/2/2025   2:34 PM            343 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\feet
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\feet\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            439 normal.svg                                               
+-a----          3/2/2025   2:34 PM            593 webbed.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\feet\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            439 normal.svg                                               
+-a----          3/2/2025   2:34 PM            593 webbed.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\headwear
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\headwear\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            695 cap.svg                                                  
+-a----          3/2/2025   2:34 PM            210 none.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\headwear\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            690 cap.svg                                                  
+-a----          3/2/2025   2:34 PM            210 none.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\legs
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\legs\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            776 long.svg                                                 
+-a----          3/2/2025   2:34 PM            774 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\legs\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            776 long.svg                                                 
+-a----          3/2/2025   2:34 PM            774 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\neckwear
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\neckwear\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            597 bowtie.svg                                               
+-a----          3/2/2025   2:34 PM            210 none.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\neckwear\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            414 bowtie.svg                                               
+-a----          3/2/2025   2:34 PM            210 none.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\tail
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\tail\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            221 long.svg                                                 
+-a----          3/2/2025   2:34 PM            221 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\tail\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            633 long.svg                                                 
+-a----          3/2/2025   2:34 PM            639 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\top
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\top\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            694 fancy.svg                                                
+-a----          3/2/2025   2:34 PM            628 mohawk.svg                                               
+-a----          3/2/2025   2:34 PM            627 normal.svg                                               
+-a----          3/2/2025   2:34 PM            335 punk.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\top\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            690 fancy.svg                                                
+-a----          3/2/2025   2:34 PM            690 mohawk.svg                                               
+-a----          3/2/2025   2:34 PM            697 normal.svg                                               
+-a----          3/2/2025   2:34 PM            304 punk.svg                                                 
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\wattle
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\wattle\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            486 long.svg                                                 
+-a----          3/2/2025   2:34 PM            484 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\wattle\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            329 long.svg                                                 
+-a----          3/2/2025   2:34 PM            328 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\wings
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+d-----          3/2/2025   2:34 PM                front                                                    
+d-----          3/2/2025   2:34 PM                side                                                     
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\wings\front
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM           1200 large.svg                                                
+-a----          3/2/2025   2:34 PM           1186 normal.svg                                               
+
+
+    Directory: C:\Users\joey\projects\jaw-labs\monsterchickenraces\src\assets\svgs\traits\wings\side
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----          3/2/2025   2:34 PM            691 large.svg                                                
+-a----          3/2/2025   2:34 PM            691 normal.svg                                               
+
+

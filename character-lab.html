@@ -278,41 +278,62 @@
         }
 
         .trait-card {
-            border: 1px solid #ddd;
+            background: white;
             border-radius: 8px;
-            padding: 10px;
+            padding: 15px;
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .trait-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
         }
 
         .trait-card.active {
             border-color: var(--accent-color);
-            background: rgba(230, 57, 70, 0.1);
+            background: rgba(230, 57, 70, 0.05);
         }
 
-        .trait-preview {
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
+        .trait-card.not-live {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .trait-card .trait-preview {
+            font-size: 32px;
             margin-bottom: 10px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .trait-name {
+        .trait-card .trait-name {
             font-weight: bold;
             margin-bottom: 5px;
+            color: var(--secondary-color);
         }
 
-        .trait-description {
-            font-size: 0.8em;
+        .trait-card .trait-description {
+            font-size: 0.9em;
             color: #666;
+            margin-bottom: 8px;
+        }
+
+        .trait-card .trait-status {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-top: 5px;
         }
 
         .trait-preview-box {
@@ -488,6 +509,22 @@
             background: rgba(230, 57, 70, 0.1);
         }
 
+        .variant-box.not-live {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #f8f8f8;
+        }
+
+        .variant-box .variant-status {
+            font-size: 0.7em;
+            color: #721c24;
+            background: #f8d7da;
+            padding: 2px 5px;
+            border-radius: 10px;
+            margin-top: 3px;
+            display: inline-block;
+        }
+
         .variant-preview {
             height: 40px;
             display: flex;
@@ -522,105 +559,18 @@
             color: white;
         }
 
-        /* SVG Editor Modal Styles */
-        .svg-editor-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1100;
-        }
-
-        .svg-editor-content {
-            background: #1e1e1e;
-            color: #fff;
-            border-radius: 8px;
-            width: 95%;
-            height: 95%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .svg-editor-header {
-            padding: 15px;
-            background: #2d2d2d;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #3d3d3d;
-        }
-
-        .svg-editor-title {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .svg-editor-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .svg-editor-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-
-        .svg-editor-btn.primary {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .svg-editor-btn.secondary {
-            background: #4d4d4d;
-            color: white;
-        }
-        
-        .svg-editor-main {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* SVG Editor Selection Styles */
-        #editor-content path.selected,
-        #editor-content circle.selected,
-        #editor-content rect.selected {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        #editor-content .path-point {
-            cursor: move;
-            opacity: 0.5;
-            transition: opacity 0.2s, r 0.2s;
-        }
-
-        #editor-content .path-point:hover,
-        #editor-content .path-point.active {
-            opacity: 1;
-            r: 4;
-        }
-
-        #editor-content path,
-        #editor-content circle,
-        #editor-content rect {
-            cursor: move;
-        }
-
+        /* Remove SVG Editor Modal Styles */
+        .svg-editor-modal,
+        .svg-editor-content,
+        .svg-editor-header,
+        .svg-editor-title,
+        .svg-editor-actions,
+        .svg-editor-btn,
+        .svg-editor-btn.primary,
+        .svg-editor-btn.secondary,
+        .svg-editor-main,
         .svg-editor-properties {
-            background: #2d2d2d;
-            padding: 15px;
-            border-left: 1px solid #3d3d3d;
-            overflow-y: auto;
+            display: none;
         }
 
         .tool-group {
@@ -744,27 +694,93 @@
         .edit-trait-btn:hover {
             background: rgba(0,0,0,0.8);
         }
+
+        /* Add new CSS for trait catalog modal */
+        #trait-catalog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .catalog-content {
+            background: var(--panel-bg);
+            max-width: 900px;
+            margin: 40px auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 80px);
+        }
+
+        .catalog-header {
+            padding: 15px 20px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .catalog-header h2 {
+            margin: 0;
+            color: white;
+        }
+
+        .close-catalog {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+            transition: all 0.2s;
+        }
+
+        .close-catalog:hover {
+            transform: scale(1.2);
+        }
+
+        .trait-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .trait-card .trait-badge {
+            background: #dff0d8;
+            color: #3c763d;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .variant-box .trait-badge {
+            font-size: 0.7em;
+            color: #3c763d;
+            background: #dff0d8;
+            padding: 2px 5px;
+            border-radius: 10px;
+            margin-top: 3px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
-    <!-- Add SVG Editor Modal Template -->
-    <template id="svg-editor-template">
-        <div class="svg-editor-modal">
-            <div class="svg-editor-content">
-                <div class="svg-editor-header">
-                    <div class="svg-editor-title">Edit Trait: <span class="trait-name"></span></div>
-                    <div class="svg-editor-actions">
-                        <button class="svg-editor-btn secondary" data-action="cancel">Cancel</button>
-                        <button class="svg-editor-btn primary" data-action="save">Save Changes</button>
-                    </div>
-                </div>
-                <div class="svg-editor-main">
-                    <div id="editor"></div>
-                </div>
-            </div>
-        </div>
-    </template>
-
     <div class="container">
         <div class="controls">
             <div class="control-group">
@@ -821,9 +837,14 @@
     </div>
 
     <script src="src/js/animation-data.js"></script>
-    <script type="module" src="src/js/trait-definitions.js"></script>
+    <script type="module" src="src/js/trait-db.js"></script>
+    <script type="module" src="src/js/svg-utils.js"></script>
+    <script type="module" src="src/js/trait-loader.js"></script>
+    <script type="module" src="src/js/character-lab-adapter.js"></script>
+    <script type="module" src="src/js/trait-db-manager.js"></script>
+    <script type="module" src="src/js/trait-editor.js"></script>
+    <script type="module" src="src/js/init-trait-editor.js"></script>
     <script type="module" src="src/js/character-lab.js"></script>
-    <script type="module" src="src/js/svg-editor.js"></script>
     <script>
         // Accordion functionality
         document.addEventListener('DOMContentLoaded', () => {

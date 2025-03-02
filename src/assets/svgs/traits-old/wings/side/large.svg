@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100" height="100" viewBox="-50 -50 100 100">
+  
+          <!-- Wing -->
+          <g class="wing">
+            <path d="
+              M-25,-25
+              C-38,-18 -38,18 -30,25
+              C-22,28 -15,24 -10,18
+              C-16,12 -16,-15 -10,-20
+              C-15,-26 -20,-30 -25,-25
+              Z" 
+              fill="inherit"
+            />
+            <path d="
+              M-25,-20
+              C-32,-14 -32,14 -28,20
+              C-24,22 -18,20 -14,16
+              Z" 
+              fill="rgba(0,0,0,0.15)"
+            />
+          </g>
+        
+</svg>
